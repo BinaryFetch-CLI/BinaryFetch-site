@@ -1,332 +1,454 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="BinaryFetch — A fully customizable, self-healing CLI system information tool for Windows. 34 modules, 400+ config options, written in C++.">
+    <meta name="description"
+        content="BinaryFetch — A fully customizable, self-healing CLI system information tool for Windows. 34 modules, 400+ config options, written in C++.">
     <meta name="keywords" content="BinaryFetch, CLI, system info, Windows, C++, neofetch, customizable, open source">
     <meta property="og:title" content="BinaryFetch | CLI System Info Tool for Windows">
-    <meta property="og:description" content="An advanced Windows system information fetcher — self-healing, modular, and infinitely customizable.">
+    <meta property="og:description"
+        content="An advanced Windows system information fetcher — self-healing, modular, and infinitely customizable.">
     <title>BinaryFetch | CLI System Info Tool for Windows</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&family=Martian+Mono:wght@700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&family=Martian+Mono:wght@700;800&display=swap"
+        rel="stylesheet">
 
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body class="locked">
 
-<!-- ================================================================
+    <!-- ================================================================
      INTRO SPLASH ANIMATION
 ================================================================ -->
-<div id="splash">
-  <div class="splash-inner">
-    <div class="splash-cmd" id="splashCmd">
-      <span class="path">PS C:\Users\dev</span><span class="arrow">&gt;</span><span id="splashTyped"></span><span class="scaret"></span>
+    <div id="splash">
+        <div class="splash-inner">
+            <div class="splash-cmd" id="splashCmd">
+                <span class="path">PS C:\Users\dev</span><span class="arrow">&gt;</span><span
+                    id="splashTyped"></span><span class="scaret"></span>
+            </div>
+            <div class="splash-logo" id="splashLogo">
+                <span class="mark">&gt;_</span>
+                <h1>BinaryFetch</h1>
+            </div>
+            <p class="splash-tag" id="splashTag">system info, instantly</p>
+        </div>
     </div>
-    <div class="splash-logo" id="splashLogo">
-      <span class="mark">&gt;_</span>
-      <h1>BinaryFetch</h1>
-    </div>
-    <p class="splash-tag" id="splashTag">system info, instantly</p>
-  </div>
-</div>
 
-<div class="page" id="page">
+    <div class="page" id="page">
 
-<!-- Animated orb background -->
-<div class="bg-mesh" aria-hidden="true">
-    <span></span><span></span><span></span>
-</div>
+        <!-- Animated orb background -->
+        <div class="bg-mesh" aria-hidden="true">
+            <span></span><span></span><span></span>
+        </div>
 
-<!-- ================================================================
+        <!-- ================================================================
      NAVIGATION
 ================================================================ -->
-<nav id="nav" role="navigation" aria-label="Main navigation">
-    <a href="index.html" class="nav-logo">BinaryFetch</a>
-    <ul class="nav-links" id="navLinks" role="list">
-        <li><a href="#features">Features</a></li>
-        <li><a href="#preview">Preview</a></li>
-        <li><a href="#install">Install</a></li>
-        <li><a href="#modules">Modules</a></li>
-        <li><a href="#faq">FAQ</a></li>
-        <li><a href="https://github.com/BinaryFetch-CLI/BinaryFetch" target="_blank" rel="noopener">GitHub</a></li>
-        <li><a href="https://github.com/BinaryFetch-CLI/BinaryFetch/releases/tag/v1.3" class="nav-cta" id="navDownloadBtn">⬇ Download</a></li>
-    </ul>
-    <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-    </button>
-</nav>
+        <nav id="nav" role="navigation" aria-label="Main navigation">
+            <a href="index.html" class="nav-logo">BinaryFetch</a>
+            <ul class="nav-links" id="navLinks" role="list">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#preview">Preview</a></li>
+                <li><a href="#install">Install</a></li>
+                <li><a href="#modules">Modules</a></li>
+                <li><a href="#faq">FAQ</a></li>
+                <li><a href="https://github.com/BinaryFetch-CLI/BinaryFetch" target="_blank" rel="noopener">GitHub</a>
+                </li>
+                <li><a href="https://github.com/BinaryFetch-CLI/BinaryFetch/releases/tag/v1.3" class="nav-cta"
+                        id="navDownloadBtn">⬇ Download</a></li>
+            </ul>
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+        </nav>
 
-<!-- ================================================================
+        <!-- ================================================================
      HERO
 ================================================================ -->
-<section class="hero" id="home">
-    <div class="hero-inner">
-        <div class="hero-badge">
-            <span class="dot"></span>
-            v1.3 · Open Source · Windows CLI
-        </div>
-
-        <h1>
-            System info,<br>
-            <span class="gradient">beautifully fetched.</span>
-        </h1>
-
-        <p class="hero-sub">
-            An advanced Windows system information fetcher written in C++ —
-            featuring <strong>self-healing configuration</strong>, modular architecture,
-            compact &amp; detailed modes, and extreme customization.
-        </p>
-
-        <div class="hero-ctas">
-            <a href="https://github.com/BinaryFetch-CLI/BinaryFetch/releases/tag/v1.3"
-               class="btn btn-primary" id="heroDownloadBtn">
-                <span>⬇</span>
-                <span>Download v1.3</span>
-            </a>
-            <a href="https://github.com/BinaryFetch-CLI/BinaryFetch"
-               target="_blank" rel="noopener"
-               class="btn btn-secondary" id="heroGithubBtn">
-                <span>⭐</span>
-                <span>Star on GitHub</span>
-            </a>
-        </div>
-
-        <!-- Animated terminal -->
-        <div class="hero-terminal terminal" id="heroTerminal" aria-label="BinaryFetch terminal preview">
-            <div class="titlebar">
-                <div class="titlebar-left">
-                    <span class="win-icon"><i></i><i></i><i></i><i></i></span>
-                    <span>BinaryFetch — Windows PowerShell</span>
-                </div>
-                <div class="win-btns">
-                    <button aria-label="Minimize"><svg viewBox="0 0 10 10"><rect x="0" y="4.5" width="10" height="1" fill="currentColor"/></svg></button>
-                    <button aria-label="Maximize"><svg viewBox="0 0 10 10"><rect x="0.5" y="0.5" width="9" height="9" fill="none" stroke="currentColor"/></svg></button>
-                    <button class="close" aria-label="Close"><svg viewBox="0 0 10 10"><path d="M0.5 0.5L9.5 9.5M9.5 0.5L0.5 9.5" stroke="currentColor" stroke-width="1.1"/></svg></button>
-                </div>
-            </div>
-
-            <div class="term-body" id="termBody">
-
-                <div class="prompt" id="cmdLine">
-                    <span class="path">PS C:\Users\dev</span><span class="arrow">&gt;</span><span id="typedCmd"></span><span class="caret" id="cmdCaret"></span>
+        <section class="hero" id="home">
+            <div class="hero-inner">
+                <div class="hero-badge">
+                    <span class="dot"></span>
+                    v1.3 · Open Source · Windows CLI
                 </div>
 
-                <div class="art-info" id="artInfo">
-                    <div class="ascii" id="ascii"></div>
+                <h1>
+                    System info,<br>
+                    <span class="gradient">beautifully fetched.</span>
+                </h1>
 
-                    <div class="info" id="infoRows">
-                        <div class="info-row banner-row"><span>~&gt;&gt; BinaryFetch</span></div>
-                        <div class="info-row k-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><span class="info-key">Time:</span><span class="info-val">(16:59:05) (Date: 11 : August : 2026) (Week: 32 - Tuesday)</span></div>
-                        <div class="info-row k-red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span class="info-key">OS:</span><span class="info-val">Windows 11 10.0 (Build 26200) (64-bit) (uptime: 3h 35m)</span></div>
-                        <div class="info-row k-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="6" width="12" height="12" rx="1.5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg><span class="info-key">CPU:</span><span class="info-val">AMD Ryzen 5 5600G with Radeon Graphics (6C/12T) @ 3.89 GHz</span></div>
-                        <div class="info-row k-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10v4M10 10v4M14 10v4M18 10v4"/></svg><span class="info-key">GPU:</span><span class="info-val">NVIDIA GeForce RTX 4070 SUPER (28%) (11.9941 GB) (@660 MHz)</span></div>
-                        <div class="info-row k-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="13" rx="1.5"/><path d="M8 21h8M12 17v4"/></svg><span class="info-key">Display 1:</span><span class="info-val">DELL S2240L (3840 x 2160) (Scale: 175%) (@60Hz)</span></div>
-                        <div class="info-row k-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="13" rx="1.5"/><path d="M8 21h8M12 17v4"/></svg><span class="info-key">Display 2:</span><span class="info-val">HP M22f FHD (3840 x 2160) (Scale: 175%) (@60Hz)</span></div>
-                        <div class="info-row k-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="12" rx="2"/><path d="M2 20h20"/></svg><span class="info-key">Memory:</span><span class="info-val">(total: 47.2937 GB) (free: 26.4722 GB) (44%)</span></div>
-                        <div class="info-row k-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M9 22h6"/></svg><span class="info-key">Audio Input:</span><span class="info-val">Microphone (Maono PD 100U) [Active]</span></div>
-                        <div class="info-row k-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3ZM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3Z"/></svg><span class="info-key">Audio Output:</span><span class="info-val">Headphones (MSL-906) [Active]</span></div>
-                        <div class="info-row k-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="info-key">Performance:</span><span class="info-val">(CPU: 23%) (GPU: 34%) (RAM: 44%) (Disk: 98%)</span></div>
-                        <div class="info-row k-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span class="info-key">User:</span><span class="info-val">@coffee~ (Domain: InterCentury) (Type: Admin)</span></div>
-                        <div class="info-row k-cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5a7 7 0 0 1 14 0M8.5 15.5a3.5 3.5 0 0 1 7 0M12 18.5v.01"/></svg><span class="info-key">Network:</span><span class="info-val">(Name: InterCentury) (Type: Ethernet) (ip: 192.168.137.1)</span></div>
-                        <div class="info-row k-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg><span class="info-key">Disk Usage:</span><span class="info-val">(C: 98%) (D: 61%) (G: 96%) (H: 99%) (I: 71%) (Y: 66%)</span></div>
+                <p class="hero-sub">
+                    An advanced Windows system information fetcher written in C++ —
+                    featuring <strong>self-healing configuration</strong>, modular architecture,
+                    compact &amp; detailed modes, and extreme customization.
+                </p>
 
-                        <div class="mono-block" id="memRows"></div>
-                        <div class="mono-block" id="storageBody"></div>
-                        <div class="mono-block" id="perfBody"></div>
+                <div class="hero-ctas">
+                    <a href="https://github.com/BinaryFetch-CLI/BinaryFetch/releases/tag/v1.3" class="btn btn-primary"
+                        id="heroDownloadBtn">
+                        <span>⬇</span>
+                        <span>Download v1.3</span>
+                    </a>
+                    <a href="https://github.com/BinaryFetch-CLI/BinaryFetch" target="_blank" rel="noopener"
+                        class="btn btn-secondary" id="heroGithubBtn">
+                        <span>⭐</span>
+                        <span>Star on GitHub</span>
+                    </a>
+                </div>
+
+                <!-- Animated terminal -->
+                <div class="hero-terminal terminal" id="heroTerminal" aria-label="BinaryFetch terminal preview">
+                    <div class="titlebar">
+                        <div class="titlebar-left">
+                            <span class="win-icon"><i></i><i></i><i></i><i></i></span>
+                            <span>BinaryFetch — Windows PowerShell</span>
+                        </div>
+                        <div class="win-btns">
+                            <button aria-label="Minimize"><svg viewBox="0 0 10 10">
+                                    <rect x="0" y="4.5" width="10" height="1" fill="currentColor" />
+                                </svg></button>
+                            <button aria-label="Maximize"><svg viewBox="0 0 10 10">
+                                    <rect x="0.5" y="0.5" width="9" height="9" fill="none" stroke="currentColor" />
+                                </svg></button>
+                            <button class="close" aria-label="Close"><svg viewBox="0 0 10 10">
+                                    <path d="M0.5 0.5L9.5 9.5M9.5 0.5L0.5 9.5" stroke="currentColor"
+                                        stroke-width="1.1" />
+                                </svg></button>
+                        </div>
+                    </div>
+
+                    <div class="term-body" id="termBody">
+
+                        <div class="prompt" id="cmdLine">
+                            <span class="path">PS C:\Users\dev</span><span class="arrow">&gt;</span><span
+                                id="typedCmd"></span><span class="caret" id="cmdCaret"></span>
+                        </div>
+
+                        <div class="art-info" id="artInfo">
+                            <div class="ascii" id="ascii"></div>
+
+                            <div class="info" id="infoRows">
+                                <div class="info-row banner-row"><span>~&gt;&gt; BinaryFetch</span></div>
+                                <div class="info-row k-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <circle cx="12" cy="12" r="9" />
+                                        <path d="M12 7v5l3 3" />
+                                    </svg><span class="info-key">Time:</span><span class="info-val">(16:59:05) (Date: 11
+                                        : August : 2026) (Week: 32 - Tuesday)</span></div>
+                                <div class="info-row k-red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M12 20h9" />
+                                        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                                    </svg><span class="info-key">OS:</span><span class="info-val">Windows 11 10.0 (Build
+                                        26200) (64-bit) (uptime: 3h 35m)</span></div>
+                                <div class="info-row k-orange"><svg viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <rect x="6" y="6" width="12" height="12" rx="1.5" />
+                                        <path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" />
+                                    </svg><span class="info-key">CPU:</span><span class="info-val">AMD Ryzen 5 5600G
+                                        with Radeon Graphics (6C/12T) @ 3.89 GHz</span></div>
+                                <div class="info-row k-orange"><svg viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <rect x="2" y="6" width="20" height="12" rx="2" />
+                                        <path d="M6 10v4M10 10v4M14 10v4M18 10v4" />
+                                    </svg><span class="info-key">GPU:</span><span class="info-val">NVIDIA GeForce RTX
+                                        4070 SUPER (28%) (11.9941 GB) (@660 MHz)</span></div>
+                                <div class="info-row k-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <rect x="3" y="4" width="18" height="13" rx="1.5" />
+                                        <path d="M8 21h8M12 17v4" />
+                                    </svg><span class="info-key">Display 1:</span><span class="info-val">DELL S2240L
+                                        (3840 x 2160) (Scale: 175%) (@60Hz)</span></div>
+                                <div class="info-row k-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <rect x="3" y="4" width="18" height="13" rx="1.5" />
+                                        <path d="M8 21h8M12 17v4" />
+                                    </svg><span class="info-key">Display 2:</span><span class="info-val">HP M22f FHD
+                                        (3840 x 2160) (Scale: 175%) (@60Hz)</span></div>
+                                <div class="info-row k-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <rect x="4" y="3" width="16" height="12" rx="2" />
+                                        <path d="M2 20h20" />
+                                    </svg><span class="info-key">Memory:</span><span class="info-val">(total: 47.2937
+                                        GB) (free: 26.4722 GB) (44%)</span></div>
+                                <div class="info-row k-purple"><svg viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                                        <path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M9 22h6" />
+                                    </svg><span class="info-key">Audio Input:</span><span class="info-val">Microphone
+                                        (Maono PD 100U) [Active]</span></div>
+                                <div class="info-row k-purple"><svg viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+                                        <path
+                                            d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3ZM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3Z" />
+                                    </svg><span class="info-key">Audio Output:</span><span class="info-val">Headphones
+                                        (MSL-906) [Active]</span></div>
+                                <div class="info-row k-orange"><svg viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <path d="M13 2 4 14h7l-1 8 9-12h-7z" />
+                                    </svg><span class="info-key">Performance:</span><span class="info-val">(CPU: 23%)
+                                        (GPU: 34%) (RAM: 44%) (Disk: 98%)</span></div>
+                                <div class="info-row k-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <circle cx="12" cy="8" r="4" />
+                                        <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" />
+                                    </svg><span class="info-key">User:</span><span class="info-val">@coffee~ (Domain:
+                                        InterCentury) (Type: Admin)</span></div>
+                                <div class="info-row k-cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M5 12.5a7 7 0 0 1 14 0M8.5 15.5a3.5 3.5 0 0 1 7 0M12 18.5v.01" />
+                                    </svg><span class="info-key">Network:</span><span class="info-val">(Name:
+                                        InterCentury) (Type: Ethernet) (ip: 192.168.137.1)</span></div>
+                                <div class="info-row k-orange"><svg viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2">
+                                        <path
+                                            d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
+                                    </svg><span class="info-key">Disk Usage:</span><span class="info-val">(C: 98%) (D:
+                                        61%) (G: 96%) (H: 99%) (I: 71%) (Y: 66%)</span></div>
+
+                                <div class="mono-block" id="memRows"></div>
+                                <div class="mono-block" id="storageBody"></div>
+                                <div class="mono-block" id="perfBody"></div>
+                            </div>
+                        </div>
+
+                        <div class="prompt" id="idlePrompt">
+                            <span class="path">PS C:\Users\dev</span><span class="arrow">&gt;</span><span
+                                id="typedClear"></span><span class="caret" id="idleCaret"></span>
+                        </div>
                     </div>
                 </div>
-
-                <div class="prompt" id="idlePrompt">
-                    <span class="path">PS C:\Users\dev</span><span class="arrow">&gt;</span><span id="typedClear"></span><span class="caret" id="idleCaret"></span>
-                </div>
             </div>
-        </div>
-    </div>
-</section>
+        </section>
 
-<!-- ================================================================
+        <!-- ================================================================
      STATS BAR
 ================================================================ -->
-<div class="stats-bar" aria-label="Project statistics">
-    <div class="stats-grid">
-        <div class="stat-item reveal">
-            <span class="stat-number" data-target="34" id="stat0">0</span>
-            <span class="stat-label">Modules</span>
+        <div class="stats-bar" aria-label="Project statistics">
+            <div class="stats-grid">
+                <div class="stat-item reveal">
+                    <span class="stat-number" data-target="34" id="stat0">0</span>
+                    <span class="stat-label">Modules</span>
+                </div>
+                <div class="stat-item reveal" style="transition-delay:0.1s">
+                    <span class="stat-number" data-target="158" id="stat1">0</span>
+                    <span class="stat-label">Functions</span>
+                </div>
+                <div class="stat-item reveal" style="transition-delay:0.2s">
+                    <span class="stat-number" data-target="400" id="stat2">0</span>
+                    <span class="stat-label">Config Options</span>
+                </div>
+                <div class="stat-item reveal" style="transition-delay:0.3s">
+                    <span class="stat-number"
+                        style="-webkit-text-fill-color:unset;background:none;color:var(--green)">∞</span>
+                    <span class="stat-label">Customization</span>
+                </div>
+            </div>
         </div>
-        <div class="stat-item reveal" style="transition-delay:0.1s">
-            <span class="stat-number" data-target="158" id="stat1">0</span>
-            <span class="stat-label">Functions</span>
-        </div>
-        <div class="stat-item reveal" style="transition-delay:0.2s">
-            <span class="stat-number" data-target="400" id="stat2">0</span>
-            <span class="stat-label">Config Options</span>
-        </div>
-        <div class="stat-item reveal" style="transition-delay:0.3s">
-            <span class="stat-number" style="-webkit-text-fill-color:unset;background:none;color:var(--green)">∞</span>
-            <span class="stat-label">Customization</span>
-        </div>
-    </div>
-</div>
 
-<!-- ================================================================
+        <!-- ================================================================
      PREVIEW SHOWCASE
 ================================================================ -->
-<section class="section showcase" id="preview">
-    <div class="container">
-        <!-- Main focused 3D tilt preview card -->
-        <div class="showcase-preview-hero reveal">
-            <div class="tilt-wrap" id="tiltWrap">
-                <div class="tilt-card" id="tiltCard">
-                    <div class="tilt-card-inner">
-                        <img src="Previews/preview.jpg"
-                             alt="BinaryFetch Solune Preview"
-                             loading="lazy">
+        <section class="section showcase" id="preview">
+            <div class="container">
+                <!-- Main focused 3D tilt preview card -->
+                <div class="showcase-preview-hero reveal">
+                    <div class="tilt-wrap" id="tiltWrap">
+                        <div class="tilt-card" id="tiltCard">
+                            <div class="tilt-card-inner">
+                                <img src="Previews/preview.jpg" alt="BinaryFetch Solune Preview" loading="lazy">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Information details below the preview image -->
+                <div class="showcase-info-bottom reveal" style="transition-delay:0.15s">
+                    <div class="showcase-header">
+                        <div class="section-tag">Live Preview</div>
+                        <h2 class="section-title">
+                            Built for Windows.<br>
+                            <span class="grad">Built to last.</span>
+                        </h2>
+                        <p class="showcase-desc">BinaryFetch displays your full system snapshot in the terminal — CPU,
+                            GPU, RAM, Disk, Network, Audio, Battery, and more — all in one beautifully formatted,
+                            color-coded output.</p>
+                        <p class="showcase-subdesc">Every element is individually toggle-able and color-configurable
+                            through a single JSON file. No restart, no recompile.</p>
+                    </div>
+
+                    <div class="showcase-features-grid">
+                        <ul class="check-list">
+                            <li><span class="icon">✓</span>Compact &amp; Expanded display modes</li>
+                            <li><span class="icon">✓</span>Multi-GPU &amp; multi-monitor detection</li>
+                            <li><span class="icon">✓</span>14+ ANSI color codes per module</li>
+                        </ul>
+                        <ul class="check-list">
+                            <li><span class="icon">✓</span>Predictive disk read/write performance</li>
+                            <li><span class="icon">✓</span>Zero network calls — fully offline</li>
+                            <li><span class="icon">✓</span>Self-healing: missing files auto-recreated</li>
+                        </ul>
+                    </div>
+
+                    <div class="showcase-cta">
+                        <a href="#install" class="btn btn-primary" id="installLinkBtn">
+                            <span>🚀</span>
+                            <span>Get Started</span>
+                        </a>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Information details below the preview image -->
-        <div class="showcase-info-bottom reveal" style="transition-delay:0.15s">
-            <div class="showcase-header">
-                <div class="section-tag">Live Preview</div>
-                <h2 class="section-title">
-                    Built for Windows.<br>
-                    <span class="grad">Built to last.</span>
-                </h2>
-                <p class="showcase-desc">BinaryFetch displays your full system snapshot in the terminal — CPU, GPU, RAM, Disk, Network, Audio, Battery, and more — all in one beautifully formatted, color-coded output.</p>
-                <p class="showcase-subdesc">Every element is individually toggle-able and color-configurable through a single JSON file. No restart, no recompile.</p>
-            </div>
-
-            <div class="showcase-features-grid">
-                <ul class="check-list">
-                    <li><span class="icon">✓</span>Compact &amp; Expanded display modes</li>
-                    <li><span class="icon">✓</span>Multi-GPU &amp; multi-monitor detection</li>
-                    <li><span class="icon">✓</span>14+ ANSI color codes per module</li>
-                </ul>
-                <ul class="check-list">
-                    <li><span class="icon">✓</span>Predictive disk read/write performance</li>
-                    <li><span class="icon">✓</span>Zero network calls — fully offline</li>
-                    <li><span class="icon">✓</span>Self-healing: missing files auto-recreated</li>
-                </ul>
-            </div>
-
-            <div class="showcase-cta">
-                <a href="#install" class="btn btn-primary" id="installLinkBtn">
-                    <span>🚀</span>
-                    <span>Get Started</span>
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ================================================================
+        <!-- ================================================================
      WHY BINARYFETCH
 ================================================================ -->
-<section class="section why-section" id="features">
-    <div class="container" style="position:relative;">
-        <div class="why-glow" aria-hidden="true"></div>
+        <section class="section why-section" id="features">
+            <div class="container" style="position:relative;">
+                <div class="why-glow" aria-hidden="true"></div>
 
-        <div class="reveal">
-            <span class="why-eyebrow"><span class="dot"></span>WHY BINARYFETCH</span>
-            <h2 class="why-title"><span class="dim">Key features of</span> <span class="brand">BinaryFetch</span></h2>
-            <p class="why-lede">Every architectural decision is made with reliability first — so you can customize freely without fear.</p>
-        </div>
-
-        <div class="why-grid">
-            <div class="why-card c-sky reveal" style="transition-delay:0.05s">
-                <div class="icon-chip">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v5c0 4.6 3 8.2 7 10 4-1.8 7-5.4 7-10V6l-7-3Z"/><path d="M9.5 12l2 2 3.5-3.5"/></svg>
+                <div class="reveal">
+                    <span class="why-eyebrow"><span class="dot"></span>WHY BINARYFETCH</span>
+                    <h2 class="why-title"><span class="dim">Key features of</span> <span
+                            class="brand">BinaryFetch</span></h2>
+                    <p class="why-lede">Every architectural decision is made with reliability first — so you can
+                        customize freely without fear.</p>
                 </div>
-                <h3>Self-Healing Engine</h3>
-                <p>Deleted <code>BinaryArt.txt</code>? Config missing? BinaryFetch auto-recreates everything from bundled defaults. The program <b>never crashes</b> due to missing user files.</p>
-            </div>
 
-            <div class="why-card c-green reveal" style="transition-delay:0.1s">
-                <div class="icon-chip">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a2 2 0 0 1 2-2h3a2 2 0 0 0 2-2 2 2 0 1 1 2 2 2 2 0 0 0 2 2h3a2 2 0 0 1 2 2v3a2 2 0 0 0-2 2 2 2 0 1 0 2 2v3a2 2 0 0 1-2 2h-3a2 2 0 0 1-2-2 2 2 0 1 0-2 2H6a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2 2 2 0 1 0-2-2Z"/></svg>
+                <div class="why-grid">
+                    <div class="why-card c-sky reveal" style="transition-delay:0.05s">
+                        <div class="icon-chip">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M12 3 5 6v5c0 4.6 3 8.2 7 10 4-1.8 7-5.4 7-10V6l-7-3Z" />
+                                <path d="M9.5 12l2 2 3.5-3.5" />
+                            </svg>
+                        </div>
+                        <h3>Self-Healing Engine</h3>
+                        <p>Deleted <code>BinaryArt.txt</code>? Config missing? BinaryFetch auto-recreates everything
+                            from bundled defaults. The program <b>never crashes</b> due to missing user files.</p>
+                    </div>
+
+                    <div class="why-card c-green reveal" style="transition-delay:0.1s">
+                        <div class="icon-chip">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path
+                                    d="M4 8a2 2 0 0 1 2-2h3a2 2 0 0 0 2-2 2 2 0 1 1 2 2 2 2 0 0 0 2 2h3a2 2 0 0 1 2 2v3a2 2 0 0 0-2 2 2 2 0 1 0 2 2v3a2 2 0 0 1-2 2h-3a2 2 0 0 1-2-2 2 2 0 1 0-2 2H6a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2 2 2 0 1 0-2-2Z" />
+                            </svg>
+                        </div>
+                        <h3>Module-Per-Domain</h3>
+                        <p>34 independent classes, 158 functions, zero coupling. Each system category is its own sealed
+                            module — no orchestration spaghetti, no hidden dependencies.</p>
+                    </div>
+
+                    <div class="why-card c-gold reveal" style="transition-delay:0.15s">
+                        <div class="icon-chip">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="9" />
+                                <circle cx="12" cy="8.5" r="1.4" fill="currentColor" stroke="none" />
+                                <circle cx="15.5" cy="12" r="1.4" fill="currentColor" stroke="none" />
+                                <circle cx="9" cy="13" r="1.4" fill="currentColor" stroke="none" />
+                                <path
+                                    d="M12 21a2 2 0 0 1-2-2c0-.6.3-1 .6-1.4.3-.4.5-.7.5-1.1a1.5 1.5 0 0 0-1.5-1.5H9a4 4 0 1 1 0-8" />
+                            </svg>
+                        </div>
+                        <h3>Extreme Customization</h3>
+                        <p>300+ individual JSON settings. Toggle any module, set per-character ANSI colors in your ASCII
+                            art, choose compact or detailed view — all without touching a line of C++.</p>
+                    </div>
+
+                    <div class="why-card c-orange reveal" style="transition-delay:0.2s">
+                        <div class="icon-chip">
+                            <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                                <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" />
+                            </svg>
+                        </div>
+                        <h3>Always First-Run Ready</h3>
+                        <p>No setup wizard, no installer prompts. Extract and run. BinaryFetch bootstraps itself
+                            completely on first launch, with sensible defaults already in place.</p>
+                    </div>
+
+                    <div class="why-card c-sky reveal" style="transition-delay:0.25s">
+                        <div class="icon-chip">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="12" rx="2" />
+                                <path d="M8 20h8M12 16v4" />
+                                <path d="M7 9l2.5 2.5L7 14M12.5 14h4" />
+                            </svg>
+                        </div>
+                        <h3>Deep Hardware Visibility</h3>
+                        <p>Reads CPU/GPU/RAM/Disk/Network/Audio/Battery. Detects all connected monitors, all GPUs
+                            simultaneously. Even predicts disk read/write speeds before the OS reports them.</p>
+                    </div>
+
+                    <div class="why-card c-green reveal" style="transition-delay:0.3s">
+                        <div class="icon-chip">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="9" />
+                                <path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18Z" />
+                            </svg>
+                        </div>
+                        <h3>Community Shareable</h3>
+                        <p>Your config is just two files — JSON + ASCII art. Zip them up and share your exact setup with
+                            anyone in the community. No databases, no profiles, no accounts.</p>
+                    </div>
                 </div>
-                <h3>Module-Per-Domain</h3>
-                <p>34 independent classes, 158 functions, zero coupling. Each system category is its own sealed module — no orchestration spaghetti, no hidden dependencies.</p>
             </div>
+        </section>
 
-            <div class="why-card c-gold reveal" style="transition-delay:0.15s">
-                <div class="icon-chip">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="8.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="9" cy="13" r="1.4" fill="currentColor" stroke="none"/><path d="M12 21a2 2 0 0 1-2-2c0-.6.3-1 .6-1.4.3-.4.5-.7.5-1.1a1.5 1.5 0 0 0-1.5-1.5H9a4 4 0 1 1 0-8"/></svg>
-                </div>
-                <h3>Extreme Customization</h3>
-                <p>300+ individual JSON settings. Toggle any module, set per-character ANSI colors in your ASCII art, choose compact or detailed view — all without touching a line of C++.</p>
-            </div>
-
-            <div class="why-card c-orange reveal" style="transition-delay:0.2s">
-                <div class="icon-chip">
-                    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg>
-                </div>
-                <h3>Always First-Run Ready</h3>
-                <p>No setup wizard, no installer prompts. Extract and run. BinaryFetch bootstraps itself completely on first launch, with sensible defaults already in place.</p>
-            </div>
-
-            <div class="why-card c-sky reveal" style="transition-delay:0.25s">
-                <div class="icon-chip">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/><path d="M7 9l2.5 2.5L7 14M12.5 14h4"/></svg>
-                </div>
-                <h3>Deep Hardware Visibility</h3>
-                <p>Reads CPU/GPU/RAM/Disk/Network/Audio/Battery. Detects all connected monitors, all GPUs simultaneously. Even predicts disk read/write speeds before the OS reports them.</p>
-            </div>
-
-            <div class="why-card c-green reveal" style="transition-delay:0.3s">
-                <div class="icon-chip">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18Z"/></svg>
-                </div>
-                <h3>Community Shareable</h3>
-                <p>Your config is just two files — JSON + ASCII art. Zip them up and share your exact setup with anyone in the community. No databases, no profiles, no accounts.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ================================================================
+        <!-- ================================================================
      INSTALLATION
 ================================================================ -->
-<section class="section" id="install" style="background: rgba(0,0,0,0.25);">
-    <div class="container">
-        <div class="section-header reveal">
-            <div class="section-tag">Installation</div>
-            <h2 class="section-title">Up and running in <span class="grad">60 seconds.</span></h2>
-            <p class="section-desc">No package manager, no admin install. Just download the release, place it anywhere, and run it.</p>
-        </div>
+        <section class="section" id="install" style="background: rgba(0,0,0,0.25);">
+            <div class="container">
+                <div class="section-header reveal">
+                    <div class="section-tag">Installation</div>
+                    <h2 class="section-title">Up and running in <span class="grad">60 seconds.</span></h2>
+                    <p class="section-desc">No package manager, no admin install. Just download the release, place it
+                        anywhere, and run it.</p>
+                </div>
 
-        <div class="install-steps reveal">
-            <div class="install-step">
-                <div class="step-num">1</div>
-                <h3>Download</h3>
-                <p>Grab <code style="color:var(--cyan);font-family:var(--mono)">BinaryFetch.exe</code> from the GitHub Releases page.</p>
-            </div>
-            <div class="install-step">
-                <div class="step-num">2</div>
-                <h3>Place &amp; Run</h3>
-                <p>Put it in any folder. Open a terminal in that directory and execute the binary.</p>
-            </div>
-            <div class="install-step">
-                <div class="step-num">3</div>
-                <h3>Customize</h3>
-                <p>Edit the two auto-generated files at <code style="color:var(--orange);font-family:var(--mono)">C:\Users\Public\BinaryFetch\</code></p>
-            </div>
-        </div>
+                <div class="install-steps reveal">
+                    <div class="install-step">
+                        <div class="step-num">1</div>
+                        <h3>Download</h3>
+                        <p>Grab <code style="color:var(--cyan);font-family:var(--mono)">BinaryFetch.exe</code> from the
+                            GitHub Releases page.</p>
+                    </div>
+                    <div class="install-step">
+                        <div class="step-num">2</div>
+                        <h3>Place &amp; Run</h3>
+                        <p>Put it in any folder. Open a terminal in that directory and execute the binary.</p>
+                    </div>
+                    <div class="install-step">
+                        <div class="step-num">3</div>
+                        <h3>Customize</h3>
+                        <p>Edit the two auto-generated files at <code
+                                style="color:var(--orange);font-family:var(--mono)">C:\Users\Public\BinaryFetch\</code>
+                        </p>
+                    </div>
+                </div>
 
-        <div class="install-code-block reveal" style="transition-delay:0.2s">
-            <div class="code-bar">
-                <span class="code-dot r"></span>
-                <span class="code-dot a"></span>
-                <span class="code-dot g"></span>
-                <span class="code-label">PowerShell — First Run</span>
-            </div>
-            <pre class="code-body"><span class="cmt"># Navigate to the folder where you placed BinaryFetch.exe</span>
+                <div class="install-code-block reveal" style="transition-delay:0.2s">
+                    <div class="code-bar">
+                        <span class="code-dot r"></span>
+                        <span class="code-dot a"></span>
+                        <span class="code-dot g"></span>
+                        <span class="code-label">PowerShell — First Run</span>
+                    </div>
+                    <pre class="code-body"><span class="cmt"># Navigate to the folder where you placed BinaryFetch.exe</span>
 <span class="fn">cd</span> <span class="pth">C:\Tools\BinaryFetch</span>
 
 <span class="cmt"># Run BinaryFetch</span>
@@ -339,393 +461,493 @@
 <span class="cmt"># Customize colors in BinaryArt.txt using $1–$14 tokens:</span>
 <span class="val">$1</span>⠀⣿⣿⣿⣿  <span class="cmt"># $1 = Red, $2 = Green, $3 = Yellow...</span>
 <span class="val">$2</span>⠀⣿⣿⣿⣿<span class="val">$3</span>⣿⣿⣿⣿  <span class="cmt"># Mix colors mid-line</span></pre>
-        </div>
+                </div>
 
-        <div class="path-pill reveal" style="transition-delay:0.3s">
-            📁 Config location: <strong>C:\Users\Public\BinaryFetch\</strong>
-        </div>
+                <div class="path-pill reveal" style="transition-delay:0.3s">
+                    📁 Config location: <strong>C:\Users\Public\BinaryFetch\</strong>
+                </div>
 
-        <div style="margin-top:2.5rem;text-align:center;" class="reveal" style="transition-delay:0.4s">
-            <a href="https://github.com/BinaryFetch-CLI/BinaryFetch/releases/tag/v1.3"
-               class="btn btn-primary" id="installDownloadBtn">
-                <span>⬇</span>
-                <span>Download BinaryFetch.exe</span>
-            </a>
-        </div>
-    </div>
-</section>
+                <div style="margin-top:2.5rem;text-align:center;" class="reveal" style="transition-delay:0.4s">
+                    <a href="https://github.com/BinaryFetch-CLI/BinaryFetch/releases/tag/v1.3" class="btn btn-primary"
+                        id="installDownloadBtn">
+                        <span>⬇</span>
+                        <span>Download BinaryFetch.exe</span>
+                    </a>
+                </div>
+            </div>
+        </section>
 
-<!-- ================================================================
+        <!-- ================================================================
      CUSTOMIZATION
 ================================================================ -->
-<section class="section" id="customization">
-    <div class="container">
-        <div class="section-header reveal">
-            <div class="section-tag">Customization</div>
-            <h2 class="section-title">Two files. <span class="grad">Infinite looks.</span></h2>
-            <p class="section-desc">Everything you can change lives in two plain-text files. No IDE required.</p>
-        </div>
-
-        <div class="custom-grid">
-            <div class="reveal">
-                <div class="section-tag" style="margin-bottom:1rem">🎨 ANSI Color Codes</div>
-                <div class="color-table-wrap">
-                    <table class="color-table" aria-label="ANSI color code reference">
-                        <thead>
-                            <tr>
-                                <th>Token</th>
-                                <th>Color</th>
-                                <th>Token</th>
-                                <th>Color</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td><span class="code-token">$1</span></td><td><span class="color-swatch" style="background:#e74c3c"></span>Red</td><td><span class="code-token">$8</span></td><td><span class="color-swatch" style="background:#ff5f57"></span>Bright Red</td></tr>
-                            <tr><td><span class="code-token">$2</span></td><td><span class="color-swatch" style="background:#2ecc71"></span>Green</td><td><span class="code-token">$9</span></td><td><span class="color-swatch" style="background:#28c840"></span>Bright Green</td></tr>
-                            <tr><td><span class="code-token">$3</span></td><td><span class="color-swatch" style="background:#f1c40f"></span>Yellow</td><td><span class="code-token">$10</span></td><td><span class="color-swatch" style="background:#febc2e"></span>Bright Yellow</td></tr>
-                            <tr><td><span class="code-token">$4</span></td><td><span class="color-swatch" style="background:#3498db"></span>Blue</td><td><span class="code-token">$11</span></td><td><span class="color-swatch" style="background:#4a9eff"></span>Bright Blue</td></tr>
-                            <tr><td><span class="code-token">$5</span></td><td><span class="color-swatch" style="background:#9b59b6"></span>Magenta</td><td><span class="code-token">$12</span></td><td><span class="color-swatch" style="background:#c678dd"></span>Bright Magenta</td></tr>
-                            <tr><td><span class="code-token">$6</span></td><td><span class="color-swatch" style="background:#00bcd4"></span>Cyan</td><td><span class="code-token">$13</span></td><td><span class="color-swatch" style="background:#00d4ff"></span>Bright Cyan</td></tr>
-                            <tr><td><span class="code-token">$7</span></td><td><span class="color-swatch" style="background:#bdc3c7"></span>White</td><td><span class="code-token">$14</span></td><td><span class="color-swatch" style="background:#ffffff"></span>Bright White</td></tr>
-                            <tr><td colspan="2"></td><td><span class="code-token">$15</span></td><td>Reset</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="custom-info reveal" style="transition-delay:0.15s">
-                <h3>Only 2 files to master</h3>
-                <p>All user customization lives under <code style="color:var(--orange);font-family:var(--mono)">C:\Users\Public\BinaryFetch\</code> — editable in any text editor.</p>
-
-                <div class="file-pill">
-                    <span class="file-pill-icon">🎭</span>
-                    <div>
-                        <div class="file-pill-name">BinaryArt.txt</div>
-                        <div class="file-pill-desc">ASCII art with per-character color codes ($1–$15)</div>
-                    </div>
-                </div>
-                <div class="file-pill">
-                    <span class="file-pill-icon">⚙️</span>
-                    <div>
-                        <div class="file-pill-name">BinaryFetch_Config.json</div>
-                        <div class="file-pill-desc">Module enable/disable, colors, display modes — 300+ settings</div>
-                    </div>
+        <section class="section" id="customization">
+            <div class="container">
+                <div class="section-header reveal">
+                    <div class="section-tag">Customization</div>
+                    <h2 class="section-title">Two files. <span class="grad">Infinite looks.</span></h2>
+                    <p class="section-desc">Everything you can change lives in two plain-text files. No IDE required.
+                    </p>
                 </div>
 
-                <p style="margin-top:1.5rem">Use <span class="code-token">$n</span> anywhere in <code style="font-family:var(--mono);color:var(--cyan)">BinaryArt.txt</code> to switch ANSI color mid-line. Mix and match for vivid, multi-color ASCII art with zero effort.</p>
-
-                <div class="install-code-block" style="margin-top:1.5rem">
-                    <div class="code-bar">
-                        <span class="code-dot r"></span><span class="code-dot a"></span><span class="code-dot g"></span>
-                        <span class="code-label">BinaryArt.txt example</span>
+                <div class="custom-grid">
+                    <div class="reveal">
+                        <div class="section-tag" style="margin-bottom:1rem">🎨 ANSI Color Codes</div>
+                        <div class="color-table-wrap">
+                            <table class="color-table" aria-label="ANSI color code reference">
+                                <thead>
+                                    <tr>
+                                        <th>Token</th>
+                                        <th>Color</th>
+                                        <th>Token</th>
+                                        <th>Color</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="code-token">$1</span></td>
+                                        <td><span class="color-swatch" style="background:#e74c3c"></span>Red</td>
+                                        <td><span class="code-token">$8</span></td>
+                                        <td><span class="color-swatch" style="background:#ff5f57"></span>Bright Red</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="code-token">$2</span></td>
+                                        <td><span class="color-swatch" style="background:#2ecc71"></span>Green</td>
+                                        <td><span class="code-token">$9</span></td>
+                                        <td><span class="color-swatch" style="background:#28c840"></span>Bright Green
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="code-token">$3</span></td>
+                                        <td><span class="color-swatch" style="background:#f1c40f"></span>Yellow</td>
+                                        <td><span class="code-token">$10</span></td>
+                                        <td><span class="color-swatch" style="background:#febc2e"></span>Bright Yellow
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="code-token">$4</span></td>
+                                        <td><span class="color-swatch" style="background:#3498db"></span>Blue</td>
+                                        <td><span class="code-token">$11</span></td>
+                                        <td><span class="color-swatch" style="background:#4a9eff"></span>Bright Blue
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="code-token">$5</span></td>
+                                        <td><span class="color-swatch" style="background:#9b59b6"></span>Magenta</td>
+                                        <td><span class="code-token">$12</span></td>
+                                        <td><span class="color-swatch" style="background:#c678dd"></span>Bright Magenta
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="code-token">$6</span></td>
+                                        <td><span class="color-swatch" style="background:#00bcd4"></span>Cyan</td>
+                                        <td><span class="code-token">$13</span></td>
+                                        <td><span class="color-swatch" style="background:#00d4ff"></span>Bright Cyan
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="code-token">$7</span></td>
+                                        <td><span class="color-swatch" style="background:#bdc3c7"></span>White</td>
+                                        <td><span class="code-token">$14</span></td>
+                                        <td><span class="color-swatch" style="background:#ffffff"></span>Bright White
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2"></td>
+                                        <td><span class="code-token">$15</span></td>
+                                        <td>Reset</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <pre class="code-body" style="font-size:0.78rem;line-height:1.7"><span class="val">$2</span>⠀⣿⣿⣿⣿⣿⣿⣿⣿  <span class="cmt">← Full line green</span>
+
+                    <div class="custom-info reveal" style="transition-delay:0.15s">
+                        <h3>Only 2 files to master</h3>
+                        <p>All user customization lives under <code
+                                style="color:var(--orange);font-family:var(--mono)">C:\Users\Public\BinaryFetch\</code>
+                            — editable in any text editor.</p>
+
+                        <div class="file-pill">
+                            <span class="file-pill-icon">🎭</span>
+                            <div>
+                                <div class="file-pill-name">BinaryArt.txt</div>
+                                <div class="file-pill-desc">ASCII art with per-character color codes ($1–$15)</div>
+                            </div>
+                        </div>
+                        <div class="file-pill">
+                            <span class="file-pill-icon">⚙️</span>
+                            <div>
+                                <div class="file-pill-name">BinaryFetch_Config.json</div>
+                                <div class="file-pill-desc">Module enable/disable, colors, display modes — 300+ settings
+                                </div>
+                            </div>
+                        </div>
+
+                        <p style="margin-top:1.5rem">Use <span class="code-token">$n</span> anywhere in <code
+                                style="font-family:var(--mono);color:var(--cyan)">BinaryArt.txt</code> to switch ANSI
+                            color mid-line. Mix and match for vivid, multi-color ASCII art with zero effort.</p>
+
+                        <div class="install-code-block" style="margin-top:1.5rem">
+                            <div class="code-bar">
+                                <span class="code-dot r"></span><span class="code-dot a"></span><span
+                                    class="code-dot g"></span>
+                                <span class="code-label">BinaryArt.txt example</span>
+                            </div>
+                            <pre class="code-body" style="font-size:0.78rem;line-height:1.7"><span class="val">$2</span>⠀⣿⣿⣿⣿⣿⣿⣿⣿  <span class="cmt">← Full line green</span>
 <span class="val">$2</span>⠀⣿⣿⣿<span class="val">$3</span>⣿⣿⣿<span class="val">$1</span>⣿⣿  <span class="cmt">← Green → Yellow → Red</span>
 ⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿  <span class="cmt">← Default terminal color</span></pre>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-</section>
+        </section>
 
-<!-- ================================================================
+        <!-- ================================================================
      MODULES GRID
 ================================================================ -->
-<section class="section" id="modules" style="background:rgba(0,0,0,0.2)">
-    <div class="container">
-        <div class="section-header reveal">
-            <div class="section-tag">Modules</div>
-            <h2 class="section-title">34 modules. <span class="grad">All independent.</span></h2>
-            <p class="section-desc">Toggle any module on or off from JSON. Each has its own color settings and granular sub-controls.</p>
-        </div>
+        <section class="section" id="modules" style="background:rgba(0,0,0,0.2)">
+            <div class="container">
+                <div class="section-header reveal">
+                    <div class="section-tag">Modules</div>
+                    <h2 class="section-title">34 modules. <span class="grad">All independent.</span></h2>
+                    <p class="section-desc">Toggle any module on or off from JSON. Each has its own color settings and
+                        granular sub-controls.</p>
+                </div>
 
-        <div class="modules-tabs reveal" role="tablist" aria-label="Module categories">
-            <button class="tab-btn active" data-tab="core" role="tab" id="tabCore" aria-selected="true">📊 Core (12)</button>
-            <button class="tab-btn" data-tab="detail" role="tab" id="tabDetail" aria-selected="false">🔍 Detailed (12)</button>
-        </div>
+                <div class="modules-tabs reveal" role="tablist" aria-label="Module categories">
+                    <button class="tab-btn active" data-tab="core" role="tab" id="tabCore" aria-selected="true">📊 Core
+                        (12)</button>
+                    <button class="tab-btn" data-tab="detail" role="tab" id="tabDetail" aria-selected="false">🔍
+                        Detailed (12)</button>
+                </div>
 
-        <div class="modules-grid" id="modulesGrid" aria-live="polite">
-            <!-- Core modules -->
-            <div class="module-card show" data-group="core">
-                <span class="module-num">CORE · 01</span>
-                <h4>Header Module</h4>
-                <p>System banner and logo display — the first thing you see on every run.</p>
-            </div>
-            <div class="module-card show" data-group="core">
-                <span class="module-num">CORE · 02</span>
-                <h4>Compact Time</h4>
-                <p>Real-time clock display with day, date, week number, and leap year status.</p>
-            </div>
-            <div class="module-card show" data-group="core">
-                <span class="module-num">CORE · 03</span>
-                <h4>Compact OS</h4>
-                <p>OS name, build, architecture, and uptime — the essential system fingerprint.</p>
-            </div>
-            <div class="module-card show" data-group="core">
-                <span class="module-num">CORE · 04</span>
-                <h4>Compact CPU</h4>
-                <p>Processor name, core count, thread count, and current clock speed.</p>
-            </div>
-            <div class="module-card show" data-group="core">
-                <span class="module-num">CORE · 05</span>
-                <h4>Compact GPU</h4>
-                <p>Graphics card overview — name, VRAM, usage percent, and frequency.</p>
-            </div>
-            <div class="module-card show" data-group="core">
-                <span class="module-num">CORE · 06</span>
-                <h4>Compact Screen</h4>
-                <p>Display info: native resolution, refresh rate, scale percent, and upscale status.</p>
-            </div>
-            <div class="module-card show" data-group="core">
-                <span class="module-num">CORE · 07</span>
-                <h4>Compact Memory</h4>
-                <p>RAM usage summary — total, free, and used percentage at a glance.</p>
-            </div>
-            <div class="module-card show" data-group="core">
-                <span class="module-num">CORE · 08</span>
-                <h4>Compact Audio</h4>
-                <p>Active input and output audio device with current status flags.</p>
-            </div>
-            <div class="module-card show" data-group="core">
-                <span class="module-num">CORE · 09</span>
-                <h4>Compact Performance</h4>
-                <p>CPU, GPU, RAM, and Disk utilization — all four at once in compact form.</p>
-            </div>
-            <div class="module-card show" data-group="core">
-                <span class="module-num">CORE · 10</span>
-                <h4>Compact User</h4>
-                <p>Username, domain, and admin status for the current session.</p>
-            </div>
-            <div class="module-card show" data-group="core">
-                <span class="module-num">CORE · 11</span>
-                <h4>Compact Network</h4>
-                <p>Connected network name, type (WiFi/Ethernet), and local IP address.</p>
-            </div>
-            <div class="module-card show" data-group="core">
-                <span class="module-num">CORE · 12</span>
-                <h4>Compact Disk</h4>
-                <p>Storage usage summary across all detected drives with capacity data.</p>
-            </div>
+                <div class="modules-grid" id="modulesGrid" aria-live="polite">
+                    <!-- Core modules -->
+                    <div class="module-card show" data-group="core">
+                        <span class="module-num">CORE · 01</span>
+                        <h4>Header Module</h4>
+                        <p>System banner and logo display — the first thing you see on every run.</p>
+                    </div>
+                    <div class="module-card show" data-group="core">
+                        <span class="module-num">CORE · 02</span>
+                        <h4>Compact Time</h4>
+                        <p>Real-time clock display with day, date, week number, and leap year status.</p>
+                    </div>
+                    <div class="module-card show" data-group="core">
+                        <span class="module-num">CORE · 03</span>
+                        <h4>Compact OS</h4>
+                        <p>OS name, build, architecture, and uptime — the essential system fingerprint.</p>
+                    </div>
+                    <div class="module-card show" data-group="core">
+                        <span class="module-num">CORE · 04</span>
+                        <h4>Compact CPU</h4>
+                        <p>Processor name, core count, thread count, and current clock speed.</p>
+                    </div>
+                    <div class="module-card show" data-group="core">
+                        <span class="module-num">CORE · 05</span>
+                        <h4>Compact GPU</h4>
+                        <p>Graphics card overview — name, VRAM, usage percent, and frequency.</p>
+                    </div>
+                    <div class="module-card show" data-group="core">
+                        <span class="module-num">CORE · 06</span>
+                        <h4>Compact Screen</h4>
+                        <p>Display info: native resolution, refresh rate, scale percent, and upscale status.</p>
+                    </div>
+                    <div class="module-card show" data-group="core">
+                        <span class="module-num">CORE · 07</span>
+                        <h4>Compact Memory</h4>
+                        <p>RAM usage summary — total, free, and used percentage at a glance.</p>
+                    </div>
+                    <div class="module-card show" data-group="core">
+                        <span class="module-num">CORE · 08</span>
+                        <h4>Compact Audio</h4>
+                        <p>Active input and output audio device with current status flags.</p>
+                    </div>
+                    <div class="module-card show" data-group="core">
+                        <span class="module-num">CORE · 09</span>
+                        <h4>Compact Performance</h4>
+                        <p>CPU, GPU, RAM, and Disk utilization — all four at once in compact form.</p>
+                    </div>
+                    <div class="module-card show" data-group="core">
+                        <span class="module-num">CORE · 10</span>
+                        <h4>Compact User</h4>
+                        <p>Username, domain, and admin status for the current session.</p>
+                    </div>
+                    <div class="module-card show" data-group="core">
+                        <span class="module-num">CORE · 11</span>
+                        <h4>Compact Network</h4>
+                        <p>Connected network name, type (WiFi/Ethernet), and local IP address.</p>
+                    </div>
+                    <div class="module-card show" data-group="core">
+                        <span class="module-num">CORE · 12</span>
+                        <h4>Compact Disk</h4>
+                        <p>Storage usage summary across all detected drives with capacity data.</p>
+                    </div>
 
-            <!-- Detailed modules -->
-            <div class="module-card" data-group="detail">
-                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 01</span>
-                <h4>Detailed Memory</h4>
-                <p>In-depth RAM analysis including module type, capacity, and speed per slot.</p>
+                    <!-- Detailed modules -->
+                    <div class="module-card" data-group="detail">
+                        <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL ·
+                            01</span>
+                        <h4>Detailed Memory</h4>
+                        <p>In-depth RAM analysis including module type, capacity, and speed per slot.</p>
+                    </div>
+                    <div class="module-card" data-group="detail">
+                        <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL ·
+                            02</span>
+                        <h4>Detailed Storage</h4>
+                        <p>Per-drive info: used/total space, filesystem, read/write speed, and storage type.</p>
+                    </div>
+                    <div class="module-card" data-group="detail">
+                        <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL ·
+                            03</span>
+                        <h4>Network Info</h4>
+                        <p>Full network details: public IP, MAC address, locale, upload and download speeds.</p>
+                    </div>
+                    <div class="module-card" data-group="detail">
+                        <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL ·
+                            04</span>
+                        <h4>Dummy Network Info</h4>
+                        <p>Fallback display for when no network connection is detected — graceful degradation.</p>
+                    </div>
+                    <div class="module-card" data-group="detail">
+                        <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL ·
+                            05</span>
+                        <h4>OS Info</h4>
+                        <p>Extended OS details: kernel version, install date, serial number, and architecture.</p>
+                    </div>
+                    <div class="module-card" data-group="detail">
+                        <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL ·
+                            06</span>
+                        <h4>CPU Info</h4>
+                        <p>Full processor specs — base speed, virtualization, L1/L2/L3 cache, sockets.</p>
+                    </div>
+                    <div class="module-card" data-group="detail">
+                        <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL ·
+                            07</span>
+                        <h4>GPU Info</h4>
+                        <p>Graphics card deep dive: vendor, driver version, temperature, and core count.</p>
+                    </div>
+                    <div class="module-card" data-group="detail">
+                        <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL ·
+                            08</span>
+                        <h4>Display Info</h4>
+                        <p>Monitor configuration: native vs current resolution, DSR, aspect ratio, scale.</p>
+                    </div>
+                    <div class="module-card" data-group="detail">
+                        <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL ·
+                            09</span>
+                        <h4>BIOS / Motherboard</h4>
+                        <p>Firmware and hardware identity — BIOS vendor, version, date, and board model.</p>
+                    </div>
+                    <div class="module-card" data-group="detail">
+                        <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL ·
+                            10</span>
+                        <h4>User Info</h4>
+                        <p>User account details: username, computer name, and domain name.</p>
+                    </div>
+                    <div class="module-card" data-group="detail">
+                        <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL ·
+                            11</span>
+                        <h4>Performance Info</h4>
+                        <p>System performance metrics: CPU/GPU/RAM/Disk percentages and full uptime.</p>
+                    </div>
+                    <div class="module-card" data-group="detail">
+                        <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL ·
+                            12</span>
+                        <h4>Audio &amp; Power</h4>
+                        <p>All audio input/output devices plus battery percent, charging status, and type.</p>
+                    </div>
+                </div>
             </div>
-            <div class="module-card" data-group="detail">
-                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 02</span>
-                <h4>Detailed Storage</h4>
-                <p>Per-drive info: used/total space, filesystem, read/write speed, and storage type.</p>
-            </div>
-            <div class="module-card" data-group="detail">
-                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 03</span>
-                <h4>Network Info</h4>
-                <p>Full network details: public IP, MAC address, locale, upload and download speeds.</p>
-            </div>
-            <div class="module-card" data-group="detail">
-                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 04</span>
-                <h4>Dummy Network Info</h4>
-                <p>Fallback display for when no network connection is detected — graceful degradation.</p>
-            </div>
-            <div class="module-card" data-group="detail">
-                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 05</span>
-                <h4>OS Info</h4>
-                <p>Extended OS details: kernel version, install date, serial number, and architecture.</p>
-            </div>
-            <div class="module-card" data-group="detail">
-                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 06</span>
-                <h4>CPU Info</h4>
-                <p>Full processor specs — base speed, virtualization, L1/L2/L3 cache, sockets.</p>
-            </div>
-            <div class="module-card" data-group="detail">
-                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 07</span>
-                <h4>GPU Info</h4>
-                <p>Graphics card deep dive: vendor, driver version, temperature, and core count.</p>
-            </div>
-            <div class="module-card" data-group="detail">
-                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 08</span>
-                <h4>Display Info</h4>
-                <p>Monitor configuration: native vs current resolution, DSR, aspect ratio, scale.</p>
-            </div>
-            <div class="module-card" data-group="detail">
-                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 09</span>
-                <h4>BIOS / Motherboard</h4>
-                <p>Firmware and hardware identity — BIOS vendor, version, date, and board model.</p>
-            </div>
-            <div class="module-card" data-group="detail">
-                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 10</span>
-                <h4>User Info</h4>
-                <p>User account details: username, computer name, and domain name.</p>
-            </div>
-            <div class="module-card" data-group="detail">
-                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 11</span>
-                <h4>Performance Info</h4>
-                <p>System performance metrics: CPU/GPU/RAM/Disk percentages and full uptime.</p>
-            </div>
-            <div class="module-card" data-group="detail">
-                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 12</span>
-                <h4>Audio &amp; Power</h4>
-                <p>All audio input/output devices plus battery percent, charging status, and type.</p>
-            </div>
-        </div>
-    </div>
-</section>
+        </section>
 
-<!-- ================================================================
+        <!-- ================================================================
      ARCHITECTURE STATS
 ================================================================ -->
-<section class="section">
-    <div class="container">
-        <div class="section-header reveal" style="text-align:center">
-            <div class="section-tag">Architecture</div>
-            <h2 class="section-title">The numbers <span class="grad">behind the binary.</span></h2>
-        </div>
+        <section class="section">
+            <div class="container">
+                <div class="section-header reveal" style="text-align:center">
+                    <div class="section-tag">Architecture</div>
+                    <h2 class="section-title">The numbers <span class="grad">behind the binary.</span></h2>
+                </div>
 
-        <div class="arch-grid">
-            <div class="arch-card reveal" style="transition-delay:0s">
-                <div class="arch-num grad" data-target="34" id="arch0">0</div>
-                <div class="arch-label">Classes</div>
+                <div class="arch-grid">
+                    <div class="arch-card reveal" style="transition-delay:0s">
+                        <div class="arch-num grad" data-target="34" id="arch0">0</div>
+                        <div class="arch-label">Classes</div>
+                    </div>
+                    <div class="arch-card reveal" style="transition-delay:0.08s">
+                        <div class="arch-num" style="color:var(--green)" data-target="158" id="arch1">0</div>
+                        <div class="arch-label">Functions</div>
+                    </div>
+                    <div class="arch-card reveal" style="transition-delay:0.16s">
+                        <div class="arch-num" style="color:var(--purple)" data-target="21" id="arch2">0</div>
+                        <div class="arch-label">Objects</div>
+                    </div>
+                    <div class="arch-card reveal" style="transition-delay:0.24s">
+                        <div class="arch-num" style="color:var(--orange)" data-target="8" id="arch3">0</div>
+                        <div class="arch-label">Structures</div>
+                    </div>
+                    <div class="arch-card reveal" style="transition-delay:0.32s">
+                        <div class="arch-num" style="color:var(--cyan)" data-target="5" id="arch4">0</div>
+                        <div class="arch-label">Lambda Helpers</div>
+                    </div>
+                </div>
             </div>
-            <div class="arch-card reveal" style="transition-delay:0.08s">
-                <div class="arch-num" style="color:var(--green)" data-target="158" id="arch1">0</div>
-                <div class="arch-label">Functions</div>
-            </div>
-            <div class="arch-card reveal" style="transition-delay:0.16s">
-                <div class="arch-num" style="color:var(--purple)" data-target="21" id="arch2">0</div>
-                <div class="arch-label">Objects</div>
-            </div>
-            <div class="arch-card reveal" style="transition-delay:0.24s">
-                <div class="arch-num" style="color:var(--orange)" data-target="8" id="arch3">0</div>
-                <div class="arch-label">Structures</div>
-            </div>
-            <div class="arch-card reveal" style="transition-delay:0.32s">
-                <div class="arch-num" style="color:var(--cyan)" data-target="5" id="arch4">0</div>
-                <div class="arch-label">Lambda Helpers</div>
-            </div>
-        </div>
-    </div>
-</section>
+        </section>
 
-<!-- ================================================================
+        <!-- ================================================================
      FAQ
 ================================================================ -->
-<section class="section" id="faq" style="background:rgba(0,0,0,0.2)">
-    <div class="container">
-        <div class="section-header reveal" style="text-align:center">
-            <div class="section-tag">FAQ</div>
-            <h2 class="section-title">Common <span class="grad">questions.</span></h2>
-        </div>
+        <section class="section" id="faq" style="background:rgba(0,0,0,0.2)">
+            <div class="container">
+                <div class="section-header reveal" style="text-align:center">
+                    <div class="section-tag">FAQ</div>
+                    <h2 class="section-title">Common <span class="grad">questions.</span></h2>
+                </div>
 
-        <div class="faq-list reveal" style="transition-delay:0.1s">
-            <div class="faq-item">
-                <button class="faq-trigger" id="faq1-btn" aria-expanded="false" aria-controls="faq1-body">
-                    Will BinaryFetch ever crash due to missing files?
-                    <span class="faq-arrow" aria-hidden="true">+</span>
-                </button>
-                <div class="faq-body" id="faq1-body" role="region" aria-labelledby="faq1-btn">
-                    <div class="faq-body-inner">No. BinaryFetch's self-healing system automatically recreates any missing files — the ASCII art file, the JSON config, or the containing directory. The program is engineered to always succeed on first run and every run after, regardless of what the user deletes. The only exception is manually broken JSON syntax.</div>
+                <div class="faq-list reveal" style="transition-delay:0.1s">
+                    <div class="faq-item">
+                        <button class="faq-trigger" id="faq1-btn" aria-expanded="false" aria-controls="faq1-body">
+                            Will BinaryFetch ever crash due to missing files?
+                            <span class="faq-arrow" aria-hidden="true">+</span>
+                        </button>
+                        <div class="faq-body" id="faq1-body" role="region" aria-labelledby="faq1-btn">
+                            <div class="faq-body-inner">No. BinaryFetch's self-healing system automatically recreates
+                                any missing files — the ASCII art file, the JSON config, or the containing directory.
+                                The program is engineered to always succeed on first run and every run after, regardless
+                                of what the user deletes. The only exception is manually broken JSON syntax.</div>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-trigger" id="faq2-btn" aria-expanded="false" aria-controls="faq2-body">
+                            Does BinaryFetch run in the background or collect data?
+                            <span class="faq-arrow" aria-hidden="true">+</span>
+                        </button>
+                        <div class="faq-body" id="faq2-body" role="region" aria-labelledby="faq2-btn">
+                            <div class="faq-body-inner">No. BinaryFetch is a pure CLI tool — it runs once when you
+                                invoke it and exits completely when it finishes. It does not install any services, does
+                                not run in the background, and does not collect, transmit, or store any user data. All
+                                information it reads stays on your machine.</div>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-trigger" id="faq3-btn" aria-expanded="false" aria-controls="faq3-body">
+                            Is there a Linux or macOS version?
+                            <span class="faq-arrow" aria-hidden="true">+</span>
+                        </button>
+                        <div class="faq-body" id="faq3-body" role="region" aria-labelledby="faq3-btn">
+                            <div class="faq-body-inner">BinaryFetch is currently Windows-only. The hardware detection
+                                layer uses Windows-specific APIs (WMI, WinAPI) which do not have direct cross-platform
+                                equivalents. There is no current development plan for a Linux or macOS port, though the
+                                modular architecture is designed to be adaptable.</div>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-trigger" id="faq4-btn" aria-expanded="false" aria-controls="faq4-body">
+                            How do I customize the ASCII art?
+                            <span class="faq-arrow" aria-hidden="true">+</span>
+                        </button>
+                        <div class="faq-body" id="faq4-body" role="region" aria-labelledby="faq4-btn">
+                            <div class="faq-body-inner">Open <code
+                                    style="color:var(--cyan);font-family:var(--mono)">C:\Users\Public\BinaryFetch\BinaryArt.txt</code>
+                                in any text editor. Paste in any ASCII or Braille block art. Prefix lines or sections
+                                with <code style="color:var(--cyan);font-family:var(--mono)">$1</code> through <code
+                                    style="color:var(--cyan);font-family:var(--mono)">$14</code> to apply ANSI colors.
+                                Use <code style="color:var(--cyan);font-family:var(--mono)">$15</code> to reset. Save
+                                and re-run BinaryFetch. That's it.</div>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-trigger" id="faq5-btn" aria-expanded="false" aria-controls="faq5-body">
+                            How do I disable specific modules?
+                            <span class="faq-arrow" aria-hidden="true">+</span>
+                        </button>
+                        <div class="faq-body" id="faq5-body" role="region" aria-labelledby="faq5-btn">
+                            <div class="faq-body-inner">Open <code
+                                    style="color:var(--cyan);font-family:var(--mono)">BinaryFetch_Config.json</code> and
+                                set any module's <code
+                                    style="color:var(--green);font-family:var(--mono)">"enabled"</code> property to
+                                <code style="color:var(--orange);font-family:var(--mono)">false</code>. The module will
+                                be completely skipped on the next run. You can also toggle individual sub-sections and
+                                configure per-element colors within the same file — over 300 individual settings are
+                                available.</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="faq-item">
-                <button class="faq-trigger" id="faq2-btn" aria-expanded="false" aria-controls="faq2-body">
-                    Does BinaryFetch run in the background or collect data?
-                    <span class="faq-arrow" aria-hidden="true">+</span>
-                </button>
-                <div class="faq-body" id="faq2-body" role="region" aria-labelledby="faq2-btn">
-                    <div class="faq-body-inner">No. BinaryFetch is a pure CLI tool — it runs once when you invoke it and exits completely when it finishes. It does not install any services, does not run in the background, and does not collect, transmit, or store any user data. All information it reads stays on your machine.</div>
-                </div>
-            </div>
-            <div class="faq-item">
-                <button class="faq-trigger" id="faq3-btn" aria-expanded="false" aria-controls="faq3-body">
-                    Is there a Linux or macOS version?
-                    <span class="faq-arrow" aria-hidden="true">+</span>
-                </button>
-                <div class="faq-body" id="faq3-body" role="region" aria-labelledby="faq3-btn">
-                    <div class="faq-body-inner">BinaryFetch is currently Windows-only. The hardware detection layer uses Windows-specific APIs (WMI, WinAPI) which do not have direct cross-platform equivalents. There is no current development plan for a Linux or macOS port, though the modular architecture is designed to be adaptable.</div>
-                </div>
-            </div>
-            <div class="faq-item">
-                <button class="faq-trigger" id="faq4-btn" aria-expanded="false" aria-controls="faq4-body">
-                    How do I customize the ASCII art?
-                    <span class="faq-arrow" aria-hidden="true">+</span>
-                </button>
-                <div class="faq-body" id="faq4-body" role="region" aria-labelledby="faq4-btn">
-                    <div class="faq-body-inner">Open <code style="color:var(--cyan);font-family:var(--mono)">C:\Users\Public\BinaryFetch\BinaryArt.txt</code> in any text editor. Paste in any ASCII or Braille block art. Prefix lines or sections with <code style="color:var(--cyan);font-family:var(--mono)">$1</code> through <code style="color:var(--cyan);font-family:var(--mono)">$14</code> to apply ANSI colors. Use <code style="color:var(--cyan);font-family:var(--mono)">$15</code> to reset. Save and re-run BinaryFetch. That's it.</div>
-                </div>
-            </div>
-            <div class="faq-item">
-                <button class="faq-trigger" id="faq5-btn" aria-expanded="false" aria-controls="faq5-body">
-                    How do I disable specific modules?
-                    <span class="faq-arrow" aria-hidden="true">+</span>
-                </button>
-                <div class="faq-body" id="faq5-body" role="region" aria-labelledby="faq5-btn">
-                    <div class="faq-body-inner">Open <code style="color:var(--cyan);font-family:var(--mono)">BinaryFetch_Config.json</code> and set any module's <code style="color:var(--green);font-family:var(--mono)">"enabled"</code> property to <code style="color:var(--orange);font-family:var(--mono)">false</code>. The module will be completely skipped on the next run. You can also toggle individual sub-sections and configure per-element colors within the same file — over 300 individual settings are available.</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+        </section>
 
-<!-- ================================================================
+        <!-- ================================================================
      DOWNLOAD CTA
 ================================================================ -->
-<section class="section cta-section" id="download">
-    <div class="container">
-        <div class="reveal">
-            <h2 class="section-title">Ready to <span class="grad">fetch?</span></h2>
-            <p>Free forever. No install. No telemetry. Just run the binary and see your system like never before.</p>
-            <a href="https://github.com/BinaryFetch-CLI/BinaryFetch/releases/tag/v1.3"
-               class="download-big" id="ctaDownloadBtn">
-                <span class="dl-icon">⬇</span>
-                Download BinaryFetch v1.3
-            </a>
-            <p class="cta-meta">
-                Windows 10/11 · x64 · ~500 KB ·
-                <a href="https://github.com/BinaryFetch-CLI/BinaryFetch" target="_blank" rel="noopener">View source on GitHub</a>
-            </p>
-        </div>
-    </div>
-</section>
+        <section class="section cta-section" id="download">
+            <div class="container">
+                <div class="reveal">
+                    <h2 class="section-title">Ready to <span class="grad">fetch?</span></h2>
+                    <p>Free forever. No install. No telemetry. Just run the binary and see your system like never
+                        before.</p>
+                    <a href="https://github.com/BinaryFetch-CLI/BinaryFetch/releases/tag/v1.3" class="download-big"
+                        id="ctaDownloadBtn">
+                        <span class="dl-icon">⬇</span>
+                        Download BinaryFetch v1.3
+                    </a>
+                    <p class="cta-meta">
+                        Windows 10/11 · x64 · ~2.4 MB ·
+                        <a href="https://github.com/BinaryFetch-CLI/BinaryFetch" target="_blank" rel="noopener">View
+                            source on GitHub</a>
+                    </p>
+                </div>
+            </div>
+        </section>
 
-<!-- ================================================================
+        <!-- ================================================================
      FOOTER
 ================================================================ -->
-<footer>
-    <div class="footer-grid">
-        <div class="footer-brand">
-            <a href="index.html" class="nav-logo" style="display:inline-block;margin-bottom:0.2rem">BinaryFetch</a>
-            <p>An advanced Windows system information fetcher written in C++. Free forever, open-source, built by the community.</p>
-        </div>
-        <div class="footer-col">
-            <h4>Navigation</h4>
-            <a href="#features">Features</a>
-            <a href="#preview">Preview</a>
-            <a href="#install">Install</a>
-            <a href="#modules">Modules</a>
-            <a href="#faq">FAQ</a>
-        </div>
-        <div class="footer-col">
-            <h4>Project</h4>
-            <a href="https://github.com/BinaryFetch-CLI/BinaryFetch" target="_blank" rel="noopener">GitHub Repository</a>
-            <a href="https://github.com/BinaryFetch-CLI/BinaryFetch/releases" target="_blank" rel="noopener">All Releases</a>
-            <a href="https://github.com/BinaryFetch-CLI/BinaryFetch/issues" target="_blank" rel="noopener">Report Issues</a>
-            <a href="contributors.html">Contributors</a>
-        </div>
-        <div class="footer-col">
-            <h4>Download</h4>
-            <a href="https://github.com/BinaryFetch-CLI/BinaryFetch/releases/tag/v1.3" target="_blank" rel="noopener">Latest Release (v1.3)</a>
-            <a href="https://github.com/BinaryFetch-CLI/BinaryFetch/releases" target="_blank" rel="noopener">Release History</a>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <span>© 2025 BinaryFetch · MIT License</span>
-        <span>Built with ❤️ by <a href="https://github.com/InterCentury" target="_blank" rel="noopener">InterCentury</a></span>
-    </div>
-</footer>
+        <footer>
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="nav-logo"
+                        style="display:inline-block;margin-bottom:0.2rem">BinaryFetch</a>
+                    <p>An advanced Windows system information fetcher written in C++. Free forever, open-source, built
+                        by the community.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Navigation</h4>
+                    <a href="#features">Features</a>
+                    <a href="#preview">Preview</a>
+                    <a href="#install">Install</a>
+                    <a href="#modules">Modules</a>
+                    <a href="#faq">FAQ</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Project</h4>
+                    <a href="https://github.com/BinaryFetch-CLI/BinaryFetch" target="_blank" rel="noopener">GitHub
+                        Repository</a>
+                    <a href="https://github.com/BinaryFetch-CLI/BinaryFetch/releases" target="_blank" rel="noopener">All
+                        Releases</a>
+                    <a href="https://github.com/BinaryFetch-CLI/BinaryFetch/issues" target="_blank"
+                        rel="noopener">Report Issues</a>
+                    <a href="contributors.html">Contributors</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Download</h4>
+                    <a href="https://github.com/BinaryFetch-CLI/BinaryFetch/releases/tag/v1.3" target="_blank"
+                        rel="noopener">Latest Release (v1.3)</a>
+                    <a href="https://github.com/BinaryFetch-CLI/BinaryFetch/releases" target="_blank"
+                        rel="noopener">Release History</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2025 BinaryFetch · MIT License</span>
+                <span>Built with ❤️ by <a href="https://github.com/InterCentury" target="_blank"
+                        rel="noopener">InterCentury</a></span>
+            </div>
+        </footer>
 
-</div><!-- /.page -->
+    </div><!-- /.page -->
 
-<script src="js/main.js" defer></script>
+    <script src="js/main.js" defer></script>
 </body>
+
 </html>
