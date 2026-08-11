@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 
 /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    1. PHYSICS MOMENTUM SCROLL
@@ -156,7 +156,7 @@ animateCounter(el, parseInt(el.dataset.target));
 });
 }
 });
-}, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+}, { threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
 
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
@@ -165,68 +165,46 @@ document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
    6. HERO TERMINAL TYPING ANIMATION
 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 (function () {
-const typing   = document.getElementById('typingText');
-const output   = document.getElementById('termOutput');
-const cursor   = document.getElementById('cursor');
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) return;
 
-const sequence = [
-{ type: 'cmd', text: 'BinaryFetch.exe', delay: 80 },
-{ type: 'pause', ms: 500 },
-{ type: 'output', lines: [
-{ cls: 't-out', text: '' },
-{ cls: 't-acc', text: '  ðŸ BinaryFetch v1.3 â€” System Information' },
-{ cls: 't-out', text: '  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€' },
-{ cls: 't-out', text: '  OS      Windows 11 Pro  Â·  x64' },
-{ cls: 't-out', text: '  CPU     AMD Ryzen 7  Â·  8C/16T  Â·  4.2 GHz' },
-{ cls: 't-out', text: '  GPU     NVIDIA RTX 3070  Â·  8 GB VRAM' },
-{ cls: 't-out', text: '  RAM     16 GB  Â·  67% used' },
-{ cls: 't-out', text: '  NET     Home-WiFi  Â·  192.168.1.42' },
-{ cls: 't-out', text: '  AUDIO   Headphones  Â·  Microphone' },
-{ cls: 't-acc', text: '  âœ“ Self-healing enabled  Â·  Config OK' },
-]},
-];
+    const ascii = document.getElementById('ascii');
+    if (!ascii) return;
+    const COLS = 16, ROWS = 8;
+    let html = '';
+    for(let r=0;r<ROWS;r++){
+        html += '<span class="row"><span class="a">' + '#'.repeat(COLS) + '</span> <span class="b">' + '<'.repeat(COLS) + '</span></span>';
+    }
+    html += '<span class="row">&nbsp;</span>';
+    for(let r=0;r<ROWS;r++){
+        html += '<span class="row"><span class="b">' + '>'.repeat(COLS) + '</span> <span class="a">' + '#'.repeat(COLS) + '</span></span>';
+    }
+    ascii.innerHTML = html;
 
-let running = false;
+    let t = 0.4;
+    document.querySelectorAll('.info-row').forEach((row,i) => { row.style.animationDelay = (t + i*0.06) + 's'; });
+    t += document.querySelectorAll('.info-row').length * 0.06 + 0.15;
 
-async function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+    document.querySelector('.section-head').style.animationDelay = t + 's';
+    t += 0.15;
+    document.querySelectorAll('.mem-line').forEach((row,i) => { row.style.animationDelay = (t + i*0.06) + 's'; });
+    t += document.querySelectorAll('.mem-line').length * 0.06 + 0.15;
 
-async function typeText(text, delayMs) {
-for (const ch of text) {
-typing.textContent += ch;
-await sleep(delayMs + Math.random() * 30);
-}
-}
+    const dashHeads = document.querySelectorAll('.dash-head');
+    if (dashHeads.length >= 2) {
+        dashHeads[0].style.animationDelay = t + 's';
+        t += 0.15;
+        document.querySelectorAll('#diskGrid .cell').forEach((c,i) => { c.style.animationDelay = (t + i*0.012) + 's'; });
+        t += document.querySelectorAll('#diskGrid .cell').length * 0.012 + 0.15;
 
-async function showOutput(lines) {
-for (const line of lines) {
-await sleep(90);
-const div = document.createElement('div');
-div.className = line.cls;
-div.textContent = line.text;
-output.appendChild(div);
-}
-}
+        dashHeads[1].style.animationDelay = t + 's';
+        t += 0.15;
+        document.querySelectorAll('#perfGrid .cell').forEach((c,i) => { c.style.animationDelay = (t + i*0.012) + 's'; });
+        t += document.querySelectorAll('#perfGrid .cell').length * 0.012 + 0.2;
+    }
 
-async function run() {
-if (running) return;
-running = true;
-await sleep(900);
-
-for (const step of sequence) {
-if (step.type === 'cmd') {
-await typeText(step.text, step.delay);
-} else if (step.type === 'pause') {
-await sleep(step.ms);
-} else if (step.type === 'output') {
-cursor.style.display = 'none';
-await showOutput(step.lines);
-}
-}
-}
-
-// Start as soon as the page loads
-if (document.readyState === 'complete') run();
-else window.addEventListener('load', run);
+    const cursorLine = document.getElementById('cursorLine');
+    if(cursorLine) cursorLine.style.animationDelay = t + 's';
 })();
 
 
@@ -327,8 +305,6 @@ window.addEventListener('scroll', () => {
 const y = window.scrollY;
 if (y < window.innerHeight && heroInner) {
 heroInner.style.transform = `translateY(${y * 0.2}px)`;
-heroInner.style.opacity   = `${1 - y / (window.innerHeight * 0.8)}`;
 }
 }, { passive: true });
 })();
-
