@@ -3,1167 +3,2047 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="BinaryFetch - A modern CLI-based system information tool for Windows">
-    <title>BinaryFetch | Modern System Info Tool</title>
+    <meta name="description" content="BinaryFetch — A fully customizable, self-healing CLI system information tool for Windows. 34 modules, 400+ config options, written in C++.">
+    <meta name="keywords" content="BinaryFetch, CLI, system info, Windows, C++, neofetch, customizable, open source">
+    <meta property="og:title" content="BinaryFetch | CLI System Info Tool for Windows">
+    <meta property="og:description" content="An advanced Windows system information fetcher — self-healing, modular, and infinitely customizable.">
+    <title>BinaryFetch | CLI System Info Tool for Windows</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
     <style>
-        /* ==========================================
-           GLOBAL RESET & SMOOTH SCROLL
-           ========================================== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
+        /* ============================================================
+           DESIGN TOKENS
+        ============================================================ */
         :root {
-            /* Upscayl-inspired Color Palette */
-            --bg-primary: #0d0d0d;
-            --bg-secondary: #1a1a1a;
-            --bg-card: #0f0f0f;
-            --accent-primary: #00d9ff;
-            --accent-secondary: #00ff88;
-            --accent-hover: #00b8d4;
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0a0;
-            --border-color: #2a2a2a;
-            
-            /* Typography */
-            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
-            
-            /* Shadows & Effects */
-            --shadow-sm: 0 2px 8px rgba(0, 217, 255, 0.1);
-            --shadow-md: 0 8px 24px rgba(0, 217, 255, 0.15);
-            --shadow-lg: 0 16px 48px rgba(0, 217, 255, 0.2);
-            --glow: 0 0 20px rgba(0, 217, 255, 0.3);
-            
-            /* Transitions */
-            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --bg:          #080810;
+            --bg-2:        #0d0d1a;
+            --bg-card:     rgba(255,255,255,0.03);
+            --bg-glass:    rgba(10,10,20,0.7);
+
+            --cyan:        #00d4ff;
+            --cyan-dim:    rgba(0,212,255,0.12);
+            --cyan-glow:   rgba(0,212,255,0.25);
+            --green:       #00ff88;
+            --orange:      #ff6b35;
+            --purple:      #7c5cbf;
+
+            --text:        #f0f0f8;
+            --text-2:      #8888aa;
+            --text-3:      #4a4a6a;
+            --border:      rgba(255,255,255,0.07);
+            --border-c:    rgba(0,212,255,0.25);
+
+            --font:        'Inter', system-ui, sans-serif;
+            --mono:        'JetBrains Mono', 'Fira Code', monospace;
+
+            /* spring easing — linear() Baseline 2023 */
+            --spring:      linear(0, 0.016 0.5%, 0.06 1%, 0.226 2%, 1.116 5.4%, 1.375 6.6%, 1.527 7.7%, 1.565 8.2%, 1.585 8.8%, 1.581 9.3%, 1.559 9.8%, 1.458 10.9%, 0.937 14.3%, 0.784 15.5%, 0.693 16.6%, 0.67 17.1%, 0.657 17.7%, 0.671 18.7%, 0.729 19.8%, 1.042 23.3%, 1.13 24.5%, 1.182 25.6%, 1.201 26.7%, 1.192 27.7%, 1.156 28.8%, 0.977 32.2%, 0.925 33.4%, 0.894 34.5%, 0.882 35.6%, 0.887 36.6%, 0.907 37.7%, 1.045 42.4%, 1.069 44.5%, 1.059 46.3%, 0.979 50.9%, 0.96 53.4%, 0.966 55.3%, 1.013 59.9%, 1.024 62.3%, 0.986 71.2%, 1.008 79.9%, 0.995 88.9%, 1);
+            --bounce:      linear(0, 0.214 14.7%, 0.386 23.7%, 0.598 31.9%, 0.999 44.7%, 0.807 52.6%, 0.762 56%, 0.747 59.4%, 0.758 62.4%, 0.793 65.6%, 0.999 77.4%, 0.961 81.2%, 0.949 84.8%, 0.956 88%, 0.993 95.5%, 1);
+            --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+
+            --r-sm:  8px;
+            --r-md:  14px;
+            --r-lg:  20px;
+            --r-xl:  28px;
         }
+
+        /* ============================================================
+           RESET
+        ============================================================ */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: auto; /* physics scroll handles this */ }
 
         body {
-            font-family: var(--font-main);
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
             line-height: 1.6;
             overflow-x: hidden;
-            position: relative;
         }
 
-        /* Animated background gradient mesh */
-        body::before {
-            content: '';
+        a { text-decoration: none; color: inherit; }
+        img { display: block; max-width: 100%; }
+        ul { list-style: none; }
+        button { font: inherit; cursor: pointer; border: none; background: none; }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.001ms !important;
+                transition-duration: 0.001ms !important;
+            }
+        }
+
+        /* ============================================================
+           ANIMATED BACKGROUND MESH
+        ============================================================ */
+        .bg-mesh {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(0, 217, 255, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(0, 255, 136, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 40% 20%, rgba(0, 217, 255, 0.05) 0%, transparent 50%);
-            pointer-events: none;
+            inset: 0;
             z-index: 0;
-            animation: meshMove 20s ease-in-out infinite;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .bg-mesh span {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            animation: orb-drift 20s ease-in-out infinite;
+        }
+        .bg-mesh span:nth-child(1) {
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(0,212,255,0.07) 0%, transparent 70%);
+            top: -150px; left: -100px;
+            animation-delay: 0s;
+        }
+        .bg-mesh span:nth-child(2) {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(124,92,191,0.08) 0%, transparent 70%);
+            bottom: 20%; right: -100px;
+            animation-delay: -7s;
+        }
+        .bg-mesh span:nth-child(3) {
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(0,255,136,0.05) 0%, transparent 70%);
+            top: 50%; left: 40%;
+            animation-delay: -14s;
+        }
+        @keyframes orb-drift {
+            0%, 100% { transform: translate(0,0) scale(1); }
+            33%       { transform: translate(40px,-40px) scale(1.05); }
+            66%       { transform: translate(-30px,30px) scale(0.95); }
         }
 
-        @keyframes meshMove {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(-2%, 2%) scale(1.02); }
-            66% { transform: translate(2%, -2%) scale(0.98); }
-        }
-
-        /* ==========================================
-           NAVIGATION - Glass Morphism Style
-           ========================================== */
+        /* ============================================================
+           NAVIGATION
+        ============================================================ */
         nav {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
             z-index: 1000;
-            background: rgba(13, 13, 13, 0.7);
-            backdrop-filter: blur(20px) saturate(180%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            transition: var(--transition);
-        }
-
-        nav.scrolled {
-            background: rgba(13, 13, 13, 0.9);
-            box-shadow: var(--shadow-md);
-            border-bottom: 1px solid rgba(0, 217, 255, 0.2);
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 1.2rem 3rem;
+            padding: 0 3rem;
+            height: 68px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            background: rgba(8,8,16,0.5);
+            backdrop-filter: blur(24px) saturate(160%);
+            -webkit-backdrop-filter: blur(24px) saturate(160%);
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.4s, background 0.4s, box-shadow 0.4s;
+        }
+        nav.scrolled {
+            background: rgba(8,8,16,0.85);
+            border-bottom-color: var(--border);
+            box-shadow: 0 8px 40px rgba(0,0,0,0.4);
         }
 
-        .logo {
-            font-size: 1.6rem;
+        .nav-logo {
+            font-size: 1.4rem;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+            font-family: var(--mono);
+            background: linear-gradient(135deg, var(--cyan), var(--green));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-decoration: none;
-            transition: var(--transition);
-            letter-spacing: -0.5px;
+            transition: filter 0.3s;
         }
-
-        .logo:hover {
-            filter: brightness(1.2);
-            transform: scale(1.05);
-        }
+        .nav-logo:hover { filter: brightness(1.3); }
 
         .nav-links {
             display: flex;
-            gap: 3rem;
-            list-style: none;
+            gap: 2.5rem;
             align-items: center;
         }
-
         .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
+            font-size: 0.9rem;
             font-weight: 500;
-            font-size: 0.95rem;
-            transition: var(--transition);
+            color: var(--text-2);
             position: relative;
-            padding: 0.5rem 0;
+            padding-bottom: 4px;
+            transition: color 0.3s;
         }
-
-        .nav-links a::before {
+        .nav-links a::after {
             content: '';
             position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-            transition: var(--transition);
-            transform: translateX(-50%);
+            bottom: 0; left: 0;
+            width: 0; height: 2px;
+            background: linear-gradient(90deg, var(--cyan), var(--green));
+            border-radius: 2px;
+            transition: width 0.4s var(--spring);
+        }
+        .nav-links a:hover { color: var(--text); }
+        .nav-links a:hover::after { width: 100%; }
+
+        .nav-cta {
+            padding: 0.55rem 1.4rem;
+            background: linear-gradient(135deg, var(--cyan), var(--green));
+            color: #080810 !important;
+            font-weight: 700;
+            border-radius: 50px;
+            font-size: 0.88rem;
+            transition: transform 0.4s var(--spring), box-shadow 0.3s, filter 0.3s !important;
+        }
+        .nav-cta::after { display: none !important; }
+        .nav-cta:hover {
+            transform: scale(1.06);
+            box-shadow: 0 0 24px var(--cyan-glow);
+            filter: brightness(1.1) !important;
         }
 
-        .nav-links a:hover {
-            color: var(--text-primary);
-        }
-
-        .nav-links a:hover::before {
-            width: 100%;
-        }
-
-        /* Mobile menu toggle */
-        .menu-toggle {
+        /* hamburger */
+        .hamburger {
             display: none;
             flex-direction: column;
             gap: 5px;
             cursor: pointer;
             z-index: 1001;
         }
-
-        .menu-toggle span {
-            width: 28px;
-            height: 2px;
-            background: var(--text-primary);
-            transition: var(--transition);
+        .hamburger span {
+            display: block;
+            width: 26px; height: 2px;
+            background: var(--text);
             border-radius: 2px;
+            transition: transform 0.4s var(--ease-out), opacity 0.3s;
         }
+        .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px,5px); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(7px,-6px); }
 
-        .menu-toggle.active span:nth-child(1) {
-            transform: rotate(45deg) translate(5px, 5px);
-        }
-
-        .menu-toggle.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .menu-toggle.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(7px, -6px);
-        }
-
-        /* ==========================================
-           HERO - Full Interactive Section
-           ========================================== */
+        /* ============================================================
+           HERO
+        ============================================================ */
         .hero {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 8rem 3rem 4rem;
+            padding: 9rem 3rem 5rem;
             position: relative;
             overflow: hidden;
         }
 
-        /* Floating particles effect */
-        .hero::after {
+        /* Star field */
+        .hero::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                radial-gradient(circle, rgba(0, 217, 255, 0.3) 1px, transparent 1px),
-                radial-gradient(circle, rgba(0, 255, 136, 0.2) 1px, transparent 1px);
-            background-size: 50px 50px, 80px 80px;
-            background-position: 0 0, 40px 40px;
-            opacity: 0.1;
-            animation: particleFloat 60s linear infinite;
+            inset: 0;
+            background-image:
+                radial-gradient(circle, rgba(255,255,255,0.35) 1px, transparent 1px),
+                radial-gradient(circle, rgba(0,212,255,0.2) 1px, transparent 1px);
+            background-size: 60px 60px, 100px 100px;
+            background-position: 0 0, 30px 30px;
+            opacity: 0.12;
+            animation: star-drift 80s linear infinite;
             pointer-events: none;
         }
-
-        @keyframes particleFloat {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-100px); }
+        @keyframes star-drift {
+            from { transform: translateY(0); }
+            to   { transform: translateY(-120px); }
         }
 
-        .hero-content {
-            max-width: 1200px;
+        .hero-inner {
+            max-width: 1100px;
             text-align: center;
             position: relative;
             z-index: 1;
         }
 
+        /* Badge */
         .hero-badge {
-            display: inline-block;
-            padding: 0.5rem 1.5rem;
-            background: rgba(0, 217, 255, 0.1);
-            border: 1px solid rgba(0, 217, 255, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 1.2rem;
+            background: rgba(0,212,255,0.08);
+            border: 1px solid rgba(0,212,255,0.3);
             border-radius: 50px;
-            color: var(--accent-primary);
-            font-size: 0.9rem;
+            font-size: 0.82rem;
             font-weight: 600;
-            margin-bottom: 2rem;
-            animation: fadeInDown 0.8s ease;
-            transition: var(--transition);
+            color: var(--cyan);
+            margin-bottom: 2.2rem;
+            animation: fade-up 0.7s var(--ease-out) backwards;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .hero-badge .dot {
+            width: 7px; height: 7px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: pulse-dot 2s ease infinite;
+        }
+        @keyframes pulse-dot {
+            0%,100% { box-shadow: 0 0 0 0 rgba(0,255,136,0.5); }
+            50%      { box-shadow: 0 0 0 6px rgba(0,255,136,0); }
         }
 
-        .hero-badge:hover {
-            background: rgba(0, 217, 255, 0.15);
-            transform: translateY(-2px);
-            box-shadow: var(--glow);
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
+        /* Headline */
         .hero h1 {
-            font-size: clamp(3rem, 8vw, 6rem);
+            font-size: clamp(3.5rem, 9vw, 7.5rem);
             font-weight: 900;
-            margin-bottom: 1.5rem;
-            line-height: 1.1;
-            letter-spacing: -2px;
-            animation: fadeInUp 0.8s ease 0.2s backwards;
+            line-height: 1.0;
+            letter-spacing: -3px;
+            margin-bottom: 1.8rem;
+            animation: fade-up 0.7s var(--ease-out) 0.15s backwards;
         }
-
-        .hero h1 .gradient-text {
-            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+        .hero h1 .gradient {
+            background: linear-gradient(135deg, var(--cyan) 0%, #9b59ff 50%, var(--green) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            display: inline-block;
-            animation: gradientShift 3s ease infinite;
+            background-size: 200% 200%;
+            animation: gradient-pan 6s ease infinite;
+        }
+        @keyframes gradient-pan {
+            0%,100% { background-position: 0% 50%; }
+            50%      { background-position: 100% 50%; }
         }
 
-        @keyframes gradientShift {
-            0%, 100% { filter: hue-rotate(0deg); }
-            50% { filter: hue-rotate(10deg); }
+        .hero-sub {
+            font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+            color: var(--text-2);
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            line-height: 1.75;
+            animation: fade-up 0.7s var(--ease-out) 0.3s backwards;
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .hero p {
-            font-size: clamp(1.2rem, 2.5vw, 1.6rem);
-            color: var(--text-secondary);
-            margin-bottom: 3rem;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-            line-height: 1.7;
-            animation: fadeInUp 0.8s ease 0.4s backwards;
-        }
-
-        .cta-buttons {
+        .hero-ctas {
             display: flex;
-            gap: 1.5rem;
+            gap: 1.2rem;
             justify-content: center;
             flex-wrap: wrap;
-            animation: fadeInUp 0.8s ease 0.6s backwards;
+            animation: fade-up 0.7s var(--ease-out) 0.45s backwards;
+            margin-bottom: 4.5rem;
         }
 
-        .btn {
-            padding: 1.2rem 2.5rem;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.05rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.7rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s ease, height 0.6s ease;
-        }
-
-        .btn:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        .btn span {
-            position: relative;
-            z-index: 1;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
-            color: var(--bg-primary);
-            box-shadow: var(--shadow-md);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-lg);
-            filter: brightness(1.1);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--text-primary);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        .btn-secondary:hover {
-            border-color: var(--accent-primary);
-            background: rgba(0, 217, 255, 0.05);
-            transform: translateY(-3px);
-        }
-
-        /* ==========================================
-           SCROLL INDICATOR
-           ========================================== */
-        .scroll-indicator {
-            position: absolute;
-            bottom: 3rem;
-            left: 50%;
-            transform: translateX(-50%);
-            animation: bounce 2s infinite;
-            cursor: pointer;
-            z-index: 10;
-        }
-
-        .scroll-indicator span {
-            display: block;
-            width: 30px;
-            height: 50px;
-            border: 2px solid rgba(0, 217, 255, 0.5);
-            border-radius: 25px;
-            position: relative;
-        }
-
-        .scroll-indicator span::before {
-            content: '';
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 6px;
-            height: 10px;
-            background: var(--accent-primary);
-            border-radius: 3px;
-            animation: scrollDown 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
-            40% { transform: translateX(-50%) translateY(-10px); }
-            60% { transform: translateX(-50%) translateY(-5px); }
-        }
-
-        @keyframes scrollDown {
-            0% { top: 10px; opacity: 1; }
-            100% { top: 30px; opacity: 0; }
-        }
-
-        /* ==========================================
-           FEATURES - Card Grid with Hover Effects
-           ========================================== */
-        .features {
-            padding: 8rem 3rem;
-            position: relative;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 5rem;
-            animation: fadeInUp 0.8s ease;
-        }
-
-        .section-header .label {
-            display: inline-block;
-            padding: 0.4rem 1.2rem;
-            background: rgba(0, 217, 255, 0.1);
-            border: 1px solid rgba(0, 217, 255, 0.3);
-            border-radius: 50px;
-            color: var(--accent-primary);
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .section-header h2 {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            margin-bottom: 1.5rem;
-            font-weight: 800;
-            letter-spacing: -1px;
-        }
-
-        .section-header p {
-            color: var(--text-secondary);
-            font-size: 1.2rem;
+        /* Terminal preview */
+        .hero-terminal {
             max-width: 700px;
             margin: 0 auto;
-            line-height: 1.7;
+            background: rgba(5,5,12,0.85);
+            border: 1px solid rgba(0,212,255,0.2);
+            border-radius: var(--r-lg);
+            overflow: hidden;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(0,212,255,0.08);
+            animation: fade-up 0.7s var(--ease-out) 0.6s backwards;
+            position: relative;
         }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
+        .terminal-bar {
+            padding: 0.9rem 1.2rem;
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
         }
+        .terminal-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+        }
+        .terminal-dot.red   { background: #ff5f57; }
+        .terminal-dot.amber { background: #febc2e; }
+        .terminal-dot.green { background: #28c840; }
+        .terminal-title {
+            font-family: var(--mono);
+            font-size: 0.78rem;
+            color: var(--text-3);
+            margin-left: 0.5rem;
+        }
+        .terminal-body {
+            padding: 1.5rem 1.8rem;
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            line-height: 1.9;
+            text-align: left;
+            min-height: 140px;
+        }
+        .t-prompt { color: var(--green); }
+        .t-cmd    { color: var(--text); }
+        .t-out    { color: var(--text-2); }
+        .t-acc    { color: var(--cyan); }
+        .t-cursor {
+            display: inline-block;
+            width: 9px; height: 1.1em;
+            background: var(--cyan);
+            vertical-align: text-bottom;
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
-        .feature-card {
-            background: rgba(255, 255, 255, 0.02);
-            padding: 3rem;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: var(--transition);
+        /* ============================================================
+           SHARED UTILITIES
+        ============================================================ */
+        .section {
+            padding: 7rem 3rem;
+            position: relative;
+            z-index: 1;
+        }
+        .container { max-width: 1300px; margin: 0 auto; }
+
+        .section-tag {
+            display: inline-block;
+            padding: 0.35rem 1rem;
+            background: rgba(0,212,255,0.08);
+            border: 1px solid rgba(0,212,255,0.2);
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.2rem;
+        }
+        .section-title {
+            font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            line-height: 1.1;
+            margin-bottom: 1.2rem;
+        }
+        .section-desc {
+            color: var(--text-2);
+            font-size: 1.1rem;
+            max-width: 620px;
+            line-height: 1.75;
+        }
+        .section-header { margin-bottom: 4rem; }
+
+        /* Scroll reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(35px);
+            transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+        }
+        .reveal.visible { opacity: 1; transform: none; }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.9rem 2.2rem;
+            border-radius: var(--r-md);
+            font-weight: 700;
+            font-size: 1rem;
+            transition: transform 0.5s var(--spring), box-shadow 0.3s, filter 0.3s;
             position: relative;
             overflow: hidden;
             cursor: pointer;
+            border: none;
         }
-
-        .feature-card::before {
-            content: '';
+        .btn-primary {
+            background: linear-gradient(135deg, var(--cyan) 0%, #4a9eff 100%);
+            color: #060612;
+            box-shadow: 0 8px 30px rgba(0,212,255,0.25);
+        }
+        .btn-primary:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 14px 40px rgba(0,212,255,0.4);
+            filter: brightness(1.1);
+        }
+        .btn-secondary {
+            background: rgba(255,255,255,0.04);
+            color: var(--text);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+        }
+        .btn-secondary:hover {
+            transform: scale(1.05) translateY(-2px);
+            border-color: rgba(0,212,255,0.3);
+            background: rgba(0,212,255,0.05);
+        }
+        /* ripple */
+        .btn .ripple-el {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(0, 217, 255, 0.05) 0%, rgba(0, 255, 136, 0.05) 100%);
-            opacity: 0;
-            transition: var(--transition);
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: scale(0);
+            animation: ripple-anim 0.6s ease-out;
+            pointer-events: none;
+        }
+        @keyframes ripple-anim {
+            to { transform: scale(4); opacity: 0; }
         }
 
-        .feature-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            border-color: rgba(0, 217, 255, 0.3);
-            box-shadow: var(--shadow-lg);
+        /* Gradient text */
+        .grad {
+            background: linear-gradient(135deg, var(--cyan), var(--green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .feature-card:hover::before {
-            opacity: 1;
-        }
-
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 1.5rem;
-            display: inline-block;
-            transition: var(--transition);
+        /* ============================================================
+           STATS BAR
+        ============================================================ */
+        .stats-bar {
+            background: rgba(255,255,255,0.02);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 2.5rem 3rem;
             position: relative;
             z-index: 1;
         }
-
-        .feature-card:hover .feature-icon {
-            transform: scale(1.2) rotate(5deg);
-        }
-
-        .feature-card h3 {
-            font-size: 1.7rem;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-            font-weight: 700;
-            position: relative;
-            z-index: 1;
-        }
-
-        .feature-card p {
-            color: var(--text-secondary);
-            line-height: 1.8;
-            font-size: 1.05rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* ==========================================
-           SHOWCASE - Split Layout with Imagery
-           ========================================== */
-        .showcase {
-            padding: 8rem 3rem;
-            position: relative;
-        }
-
-        .showcase-container {
-            max-width: 1400px;
+        .stats-grid {
+            max-width: 1100px;
             margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            text-align: center;
+        }
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        .stat-number {
+            font-size: 2.8rem;
+            font-weight: 900;
+            font-family: var(--mono);
+            background: linear-gradient(135deg, var(--cyan), var(--green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-2);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        /* ============================================================
+           PREVIEW SHOWCASE  (3D tilt card)
+        ============================================================ */
+        .showcase { overflow: hidden; }
+
+        .showcase-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 6rem;
             align-items: center;
         }
 
-        .showcase-image {
+        /* 3-D tilt container */
+        .tilt-wrap {
+            perspective: 1000px;
+        }
+        .tilt-card {
             position: relative;
-            border-radius: 10px;
+            border-radius: var(--r-xl);
             overflow: hidden;
-            box-shadow: var(--shadow-lg);
-            transition: var(--transition);
-            aspect-ratio: 10/13;
-            background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, rgba(0, 255, 136, 0.1) 100%);
-            border: 1px solid rgba(0, 217, 255, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border: 1px solid rgba(0,212,255,0.15);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            transform-style: preserve-3d;
+            transition: box-shadow 0.4s;
+            background: #07070f;
+            will-change: transform;
         }
-
-        .showcase-image:hover {
-            transform: scale(1.03);
-            box-shadow: 0 20px 60px rgba(0, 217, 255, 0.3);
-        }
-
-        /* Add this when you have a real image */
-        .showcase-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .showcase-content h2 {
-            font-size: clamp(2.5rem, 4vw, 3.5rem);
-            margin-bottom: 1.5rem;
-            font-weight: 800;
-            letter-spacing: -1px;
-        }
-
-        .showcase-content .highlight {
-            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .showcase-content p {
-            color: var(--text-secondary);
-            margin-bottom: 1.2rem;
-            line-height: 1.9;
-            font-size: 1.1rem;
-        }
-
-        .showcase-list {
-            list-style: none;
-            margin: 2.5rem 0;
-        }
-
-        .showcase-list li {
-            padding: 1rem 0;
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-            color: var(--text-secondary);
-            transition: var(--transition);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .showcase-list li:hover {
-            color: var(--text-primary);
-            padding-left: 0.5rem;
-        }
-
-        .showcase-list li::before {
-            content: '✨';
-            color: var(--accent-secondary);
-            font-weight: bold;
-            font-size: 1.4rem;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 28px;
-            height: 28px;
-            background: rgba(0, 255, 136, 0.1);
-            border-radius: 50%;
-        }
-
-        /* ==========================================
-           CTA SECTION
-           ========================================== */
-        .cta-section {
-            padding: 8rem 3rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cta-section::before {
+        /* cursor-following glow */
+        .tilt-card::before {
             content: '';
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(0, 217, 255, 0.15) 0%, transparent 70%);
-            filter: blur(80px);
-            animation: pulse 4s ease-in-out infinite;
+            inset: 0;
+            background: radial-gradient(
+                circle at var(--mx,50%) var(--my,50%),
+                rgba(0,212,255,0.15),
+                transparent 55%
+            );
+            opacity: 0;
+            transition: opacity 0.4s;
+            pointer-events: none;
+            z-index: 2;
+            border-radius: inherit;
+        }
+        .tilt-card:hover::before { opacity: 1; }
+
+        .tilt-card img {
+            width: 100%;
+            display: block;
+            transform: translateZ(18px);
+            border-radius: inherit;
+        }
+        .tilt-card:hover {
+            box-shadow: 0 30px 80px rgba(0,212,255,0.2), 0 0 60px rgba(0,212,255,0.1);
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
-            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
+        .showcase-content h2 { margin-bottom: 1.2rem; }
+        .showcase-content p  { color: var(--text-2); line-height: 1.8; margin-bottom: 1rem; font-size: 1.05rem; }
+
+        .check-list { margin: 2rem 0; display: flex; flex-direction: column; gap: 0.8rem; }
+        .check-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            color: var(--text-2);
+            font-size: 1rem;
+            transition: color 0.3s;
+        }
+        .check-list li:hover { color: var(--text); }
+        .check-list li .icon {
+            flex-shrink: 0;
+            width: 22px; height: 22px;
+            background: rgba(0,255,136,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: var(--green);
+            margin-top: 2px;
         }
 
-        .cta-content {
+        /* ============================================================
+           WHAT IT DOES — WHY SECTION
+        ============================================================ */
+        .why-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        .why-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: 2.2rem;
+            transition: transform 0.5s var(--spring), border-color 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .why-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(0,212,255,0.05), rgba(0,255,136,0.03));
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        .why-card:hover { transform: translateY(-8px) scale(1.01); border-color: var(--border-c); box-shadow: 0 16px 50px rgba(0,212,255,0.1); }
+        .why-card:hover::before { opacity: 1; }
+        .why-icon {
+            font-size: 2.4rem;
+            margin-bottom: 1.2rem;
+            display: inline-block;
+            transition: transform 0.5s var(--spring);
+        }
+        .why-card:hover .why-icon { transform: scale(1.2) rotate(5deg); }
+        .why-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.8rem; }
+        .why-card p  { color: var(--text-2); font-size: 0.97rem; line-height: 1.7; }
+
+        /* ============================================================
+           INSTALLATION
+        ============================================================ */
+        .install-steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .install-step {
+            position: relative;
+        }
+        .install-step::after {
+            content: '→';
+            position: absolute;
+            right: -1.2rem;
+            top: 2rem;
+            color: var(--text-3);
+            font-size: 1.5rem;
+        }
+        .install-step:last-child::after { display: none; }
+
+        .step-num {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, var(--cyan), var(--green));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1rem;
+            color: #080810;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 0 20px var(--cyan-glow);
+        }
+        .install-step h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .install-step p  { color: var(--text-2); font-size: 0.92rem; line-height: 1.65; }
+
+        .install-code-block {
+            background: rgba(5,5,12,0.9);
+            border: 1px solid rgba(0,212,255,0.2);
+            border-radius: var(--r-lg);
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+        .code-bar {
+            padding: 0.8rem 1.2rem;
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .code-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .code-dot.r { background: #ff5f57; }
+        .code-dot.a { background: #febc2e; }
+        .code-dot.g { background: #28c840; }
+        .code-label {
+            font-family: var(--mono);
+            font-size: 0.74rem;
+            color: var(--text-3);
+            margin-left: 0.4rem;
+        }
+        pre.code-body {
+            padding: 1.6rem 1.8rem;
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            line-height: 2;
+            overflow-x: auto;
+        }
+        .kw  { color: #ff79c6; }
+        .str { color: #f1fa8c; }
+        .cmt { color: #6272a4; }
+        .fn  { color: var(--cyan); }
+        .val { color: var(--green); }
+        .pth { color: #ffb86c; }
+
+        /* path pill */
+        .path-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            background: rgba(255,107,53,0.08);
+            border: 1px solid rgba(255,107,53,0.2);
+            border-radius: 50px;
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            color: var(--orange);
+            margin-top: 1.5rem;
+        }
+
+        /* ============================================================
+           CUSTOMIZATION  — COLOR TABLE
+        ============================================================ */
+        .custom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .color-table-wrap {
+            overflow-x: auto;
+        }
+        table.color-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--mono);
+            font-size: 0.82rem;
+        }
+        table.color-table th {
+            padding: 0.7rem 1rem;
+            background: rgba(255,255,255,0.04);
+            color: var(--text-2);
+            font-weight: 600;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        table.color-table td {
+            padding: 0.65rem 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            color: var(--text-2);
+            transition: background 0.2s;
+        }
+        table.color-table tr:hover td { background: rgba(255,255,255,0.03); }
+        .color-swatch {
+            display: inline-block;
+            width: 14px; height: 14px;
+            border-radius: 3px;
+            vertical-align: middle;
+            margin-right: 0.4rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .code-token {
+            background: rgba(0,212,255,0.08);
+            color: var(--cyan);
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .custom-info h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: 1rem; }
+        .custom-info p  { color: var(--text-2); line-height: 1.75; margin-bottom: 1.5rem; font-size: 0.97rem; }
+
+        .file-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem 1.2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--r-md);
+            margin-bottom: 0.8rem;
+            transition: border-color 0.3s, transform 0.4s var(--spring);
+        }
+        .file-pill:hover { border-color: var(--border-c); transform: translateX(6px); }
+        .file-pill-icon { font-size: 1.3rem; }
+        .file-pill-name { font-family: var(--mono); font-size: 0.88rem; color: var(--cyan); font-weight: 600; }
+        .file-pill-desc { font-size: 0.8rem; color: var(--text-3); }
+
+        /* ============================================================
+           MODULES GRID
+        ============================================================ */
+        .modules-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 0.55rem 1.4rem;
+            border-radius: 50px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            color: var(--text-2);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .tab-btn.active, .tab-btn:hover {
+            background: rgba(0,212,255,0.1);
+            border-color: rgba(0,212,255,0.35);
+            color: var(--cyan);
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.2rem;
+        }
+        .module-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--r-md);
+            padding: 1.5rem;
+            transition: transform 0.5s var(--spring), border-color 0.3s, box-shadow 0.3s;
+            display: none;
+        }
+        .module-card.show { display: block; }
+        .module-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--border-c);
+            box-shadow: 0 12px 40px rgba(0,212,255,0.08);
+        }
+        .module-num {
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            color: var(--cyan);
+            background: rgba(0,212,255,0.08);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            margin-bottom: 0.8rem;
+            display: inline-block;
+        }
+        .module-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .module-card p  { font-size: 0.85rem; color: var(--text-2); line-height: 1.6; }
+
+        /* ============================================================
+           ARCHITECTURE STATS
+        ============================================================ */
+        .arch-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1.5rem;
+            text-align: center;
+        }
+        .arch-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: 2rem 1rem;
+            transition: border-color 0.3s, transform 0.5s var(--spring);
+        }
+        .arch-card:hover { border-color: var(--border-c); transform: translateY(-5px); }
+        .arch-num {
+            font-size: 2.5rem;
+            font-weight: 900;
+            font-family: var(--mono);
+            line-height: 1;
+            margin-bottom: 0.4rem;
+        }
+        .arch-label {
+            font-size: 0.78rem;
+            color: var(--text-2);
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+
+        /* ============================================================
+           FAQ — ACCORDION
+        ============================================================ */
+        .faq-list { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 0.8rem; }
+
+        .faq-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--r-md);
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+        .faq-item.open { border-color: rgba(0,212,255,0.25); }
+
+        .faq-trigger {
+            width: 100%;
+            padding: 1.4rem 1.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text);
+            background: none;
+            border: none;
+            text-align: left;
+            gap: 1rem;
+        }
+        .faq-arrow {
+            flex-shrink: 0;
+            width: 24px; height: 24px;
+            background: rgba(0,212,255,0.08);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--cyan);
+            font-size: 0.9rem;
+            transition: transform 0.4s var(--spring), background 0.3s;
+        }
+        .faq-item.open .faq-arrow { transform: rotate(45deg); background: rgba(0,212,255,0.18); }
+
+        .faq-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s var(--ease-out), padding 0.3s;
+        }
+        .faq-body.open { max-height: 300px; }
+        .faq-body-inner {
+            padding: 0 1.8rem 1.4rem;
+            color: var(--text-2);
+            font-size: 0.97rem;
+            line-height: 1.75;
+        }
+
+        /* ============================================================
+           DOWNLOAD CTA
+        ============================================================ */
+        .cta-section {
+            background: radial-gradient(ellipse at center, rgba(0,212,255,0.07) 0%, transparent 65%);
+            text-align: center;
+        }
+        .cta-section h2 { font-size: clamp(2.5rem,5vw,4rem); margin-bottom: 1.2rem; }
+        .cta-section p  { color: var(--text-2); font-size: 1.15rem; margin-bottom: 2.8rem; max-width: 550px; margin-left: auto; margin-right: auto; }
+
+        .download-big {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1.2rem 3rem;
+            background: linear-gradient(135deg, var(--cyan), var(--green));
+            color: #060612;
+            border-radius: var(--r-lg);
+            font-size: 1.15rem;
+            font-weight: 800;
+            box-shadow: 0 10px 40px rgba(0,212,255,0.3);
+            transition: transform 0.5s var(--spring), box-shadow 0.3s, filter 0.3s;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+        }
+        .download-big:hover {
+            transform: scale(1.06) translateY(-3px);
+            box-shadow: 0 18px 60px rgba(0,212,255,0.45);
+            filter: brightness(1.08);
+        }
+        .download-big .dl-icon { font-size: 1.4rem; }
+
+        .cta-meta {
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text-3);
+        }
+        .cta-meta a { color: var(--cyan); }
+
+        /* ============================================================
+           FOOTER
+        ============================================================ */
+        footer {
+            background: rgba(0,0,0,0.4);
+            border-top: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            padding: 4rem 3rem 2rem;
             position: relative;
             z-index: 1;
-            max-width: 800px;
-            margin: 0 auto;
         }
-
-        .cta-content h2 {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            margin-bottom: 1.5rem;
-            font-weight: 800;
-        }
-
-        .cta-content p {
-            font-size: 1.3rem;
-            color: var(--text-secondary);
-            margin-bottom: 3rem;
-            line-height: 1.7;
-        }
-
-        /* ==========================================
-           FOOTER
-           ========================================== */
-        footer {
-            background: rgba(0, 0, 0, 0.5);
-            padding: 4rem 3rem 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-        }
-
-        .footer-container {
-            max-width: 1400px;
+        .footer-grid {
+            max-width: 1300px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: 2fr 1fr 1fr 1fr;
             gap: 4rem;
             margin-bottom: 3rem;
         }
-
-        .footer-section h3 {
-            margin-bottom: 1.5rem;
-            color: var(--text-primary);
-            font-size: 1.2rem;
-            font-weight: 700;
-        }
-
-        .footer-section p,
-        .footer-section a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            display: block;
-            margin-bottom: 0.8rem;
-            transition: var(--transition);
-            line-height: 1.7;
-        }
-
-        .footer-section a:hover {
-            color: var(--accent-primary);
-            padding-left: 0.5rem;
-        }
-
+        .footer-brand p { color: var(--text-2); font-size: 0.92rem; line-height: 1.75; margin-top: 0.8rem; max-width: 280px; }
+        .footer-col h4 { font-size: 0.88rem; font-weight: 700; margin-bottom: 1.2rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text); }
+        .footer-col a  { display: block; color: var(--text-2); font-size: 0.9rem; margin-bottom: 0.7rem; transition: color 0.3s, padding-left 0.3s; }
+        .footer-col a:hover { color: var(--cyan); padding-left: 0.4rem; }
         .footer-bottom {
-            max-width: 1400px;
+            max-width: 1300px;
             margin: 0 auto;
             padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.95rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-3);
+            flex-wrap: wrap;
+            gap: 1rem;
         }
+        .footer-bottom a { color: var(--cyan); }
 
-        .footer-bottom a {
-            color: var(--accent-primary);
-            text-decoration: none;
-            transition: var(--transition);
+        /* ============================================================
+           RESPONSIVE
+        ============================================================ */
+        @media (max-width: 1100px) {
+            .arch-grid { grid-template-columns: repeat(3, 1fr); }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
         }
-
-        .footer-bottom a:hover {
-            text-decoration: underline;
+        @media (max-width: 900px) {
+            .showcase-grid,
+            .custom-grid { grid-template-columns: 1fr; gap: 3rem; }
+            .why-grid { grid-template-columns: 1fr 1fr; }
+            .install-steps { grid-template-columns: 1fr; }
+            .install-step::after { display: none; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
         }
-
-        /* ==========================================
-           RESPONSIVE DESIGN
-           ========================================== */
-        @media (max-width: 1024px) {
-            .showcase-container {
-                grid-template-columns: 1fr;
-                gap: 4rem;
-            }
-
-            .showcase-container .showcase-image {
-                order: -1;
-            }
-        }
-
         @media (max-width: 768px) {
-            .nav-container {
-                padding: 1rem 1.5rem;
-            }
-
+            nav { padding: 0 1.5rem; }
             .nav-links {
                 position: fixed;
-                top: 0;
-                right: -100%;
-                width: 80%;
-                max-width: 400px;
+                top: 0; right: -100%;
+                width: 80%; max-width: 360px;
                 height: 100vh;
-                background: rgba(13, 13, 13, 0.98);
-                backdrop-filter: blur(20px);
+                background: rgba(8,8,16,0.97);
+                backdrop-filter: blur(30px);
                 flex-direction: column;
                 padding: 6rem 2rem 2rem;
                 gap: 2rem;
-                transition: var(--transition);
-                border-left: 1px solid rgba(0, 217, 255, 0.2);
+                transition: right 0.4s var(--ease-out);
+                border-left: 1px solid var(--border);
                 align-items: flex-start;
             }
-
-            .nav-links.active {
-                right: 0;
-            }
-
-            .nav-links a {
-                font-size: 1.2rem;
-            }
-
-            .menu-toggle {
-                display: flex;
-            }
-
-            .hero {
-                padding: 6rem 1.5rem 4rem;
-            }
-
-            .features,
-            .showcase,
-            .cta-section {
-                padding: 4rem 1.5rem;
-            }
-
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .cta-buttons {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .scroll-indicator {
-                display: none;
-            }
+            .nav-links.open { right: 0; }
+            .nav-links a { font-size: 1.15rem; }
+            .hamburger { display: flex; }
+            .section { padding: 5rem 1.5rem; }
+            .why-grid { grid-template-columns: 1fr; }
+            .arch-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+            .hero { padding: 8rem 1.5rem 4rem; }
+            .stats-bar { padding: 2rem 1.5rem; }
+        }
+        @media (max-width: 500px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .arch-grid { grid-template-columns: 1fr 1fr; }
+            .hero-ctas { flex-direction: column; align-items: center; }
+            .btn { width: 100%; justify-content: center; max-width: 320px; }
         }
 
-        @media (max-width: 480px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .section-header h2 {
-                font-size: 2rem;
-            }
-
-            .feature-card {
-                padding: 2rem;
-            }
-        }
-
-        /* ==========================================
-           INTERSECTION OBSERVER ANIMATIONS
-           Elements fade in when scrolled into view
-           ========================================== */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
-        }
-
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
+        @keyframes fade-up {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: none; }
         }
     </style>
 </head>
 <body>
-    <!-- ==========================================
-         NAVIGATION BAR
-         ========================================== -->
-    <nav id="navbar">
-        <div class="nav-container">
-            <a href="index.html" class="logo">BinaryFetch</a>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="docs.html">Docs</a></li>
-                <li><a href="download.html">Download</a></li>
-                <li><a href="contributors.html">Contributors</a></li>
-                <li><a href="https://github.com/InterCentury/BinaryFetch" target="_blank">GitHub</a></li>
-            </ul>
-            <div class="menu-toggle" id="menuToggle">
-                <span></span>
-                <span></span>
-                <span></span>
+
+<!-- Animated orb background -->
+<div class="bg-mesh" aria-hidden="true">
+    <span></span><span></span><span></span>
+</div>
+
+<!-- ================================================================
+     NAVIGATION
+================================================================ -->
+<nav id="nav" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav-logo">BinaryFetch</a>
+    <ul class="nav-links" id="navLinks" role="list">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#preview">Preview</a></li>
+        <li><a href="#install">Install</a></li>
+        <li><a href="#modules">Modules</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="https://github.com/BinaryFetch-CLI/BinaryFetch" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://github.com/BinaryFetch-CLI/BinaryFetch/releases/tag/v1.3" class="nav-cta" id="navDownloadBtn">⬇ Download</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<!-- ================================================================
+     HERO
+================================================================ -->
+<section class="hero" id="home">
+    <div class="hero-inner">
+        <div class="hero-badge">
+            <span class="dot"></span>
+            v1.3 · Open Source · Windows CLI
+        </div>
+
+        <h1>
+            System info,<br>
+            <span class="gradient">beautifully fetched.</span>
+        </h1>
+
+        <p class="hero-sub">
+            An advanced Windows system information fetcher written in C++ —
+            featuring <strong>self-healing configuration</strong>, modular architecture,
+            compact &amp; detailed modes, and extreme customization.
+        </p>
+
+        <div class="hero-ctas">
+            <a href="https://github.com/BinaryFetch-CLI/BinaryFetch/releases/tag/v1.3"
+               class="btn btn-primary" id="heroDownloadBtn">
+                <span>⬇</span>
+                <span>Download v1.3</span>
+            </a>
+            <a href="https://github.com/BinaryFetch-CLI/BinaryFetch"
+               target="_blank" rel="noopener"
+               class="btn btn-secondary" id="heroGithubBtn">
+                <span>⭐</span>
+                <span>Star on GitHub</span>
+            </a>
+        </div>
+
+        <!-- Animated terminal -->
+        <div class="hero-terminal" id="heroTerminal" aria-label="BinaryFetch terminal preview">
+            <div class="terminal-bar">
+                <span class="terminal-dot red"></span>
+                <span class="terminal-dot amber"></span>
+                <span class="terminal-dot green"></span>
+                <span class="terminal-title">Windows PowerShell</span>
+            </div>
+            <div class="terminal-body" id="termBody">
+                <span class="t-prompt">PS C:\Users\User&gt;</span>
+                <span class="t-cmd"> </span><span id="typingText"></span><span class="t-cursor" id="cursor"></span>
+                <div id="termOutput" style="margin-top:0.6rem"></div>
             </div>
         </div>
-    </nav>
+    </div>
+</section>
 
-    <!-- ==========================================
-         HERO SECTION
-         ========================================== -->
-    <section class="hero">
-        <div class="hero-content">
-            <div class="hero-badge">🚀 Open Source & Free Forever</div>
-            <h1>
-                <span class="gradient-text">BinaryFetch</span>
-            </h1>
-            <p>A modern, CLI-based system information tool for Windows. Fast, customizable, and built for developers who demand precision.</p>
-            <div class="cta-buttons">
-                <a href="download.html" class="btn btn-primary">
-                    <span>⬇</span>
-                    <span>Download Latest</span>
+<!-- ================================================================
+     STATS BAR
+================================================================ -->
+<div class="stats-bar" aria-label="Project statistics">
+    <div class="stats-grid">
+        <div class="stat-item reveal">
+            <span class="stat-number" data-target="34" id="stat0">0</span>
+            <span class="stat-label">Modules</span>
+        </div>
+        <div class="stat-item reveal" style="transition-delay:0.1s">
+            <span class="stat-number" data-target="158" id="stat1">0</span>
+            <span class="stat-label">Functions</span>
+        </div>
+        <div class="stat-item reveal" style="transition-delay:0.2s">
+            <span class="stat-number" data-target="400" id="stat2">0</span>
+            <span class="stat-label">Config Options</span>
+        </div>
+        <div class="stat-item reveal" style="transition-delay:0.3s">
+            <span class="stat-number" style="-webkit-text-fill-color:unset;background:none;color:var(--green)">∞</span>
+            <span class="stat-label">Customization</span>
+        </div>
+    </div>
+</div>
+
+<!-- ================================================================
+     PREVIEW SHOWCASE
+================================================================ -->
+<section class="section showcase" id="preview">
+    <div class="container">
+        <div class="showcase-grid">
+
+            <!-- 3D tilt card -->
+            <div class="tilt-wrap reveal" id="tiltWrap">
+                <div class="tilt-card" id="tiltCard">
+                    <img src="https://raw.githubusercontent.com/BinaryFetch-CLI/BinaryFetch/984ddde6b5d583c74f146ba0a71fb131a9e91e29/Previews/00_main.png"
+                         alt="BinaryFetch main preview"
+                         loading="lazy"
+                         width="700">
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="showcase-content reveal" style="transition-delay:0.15s">
+                <div class="section-tag">Live Preview</div>
+                <h2 class="section-title">
+                    Built for Windows.<br>
+                    <span class="grad">Built to last.</span>
+                </h2>
+                <p>BinaryFetch displays your full system snapshot in the terminal — CPU, GPU, RAM, Disk, Network, Audio, Battery, and more — all in one beautifully formatted, color-coded output.</p>
+                <p>Every element is individually toggle-able and color-configurable through a single JSON file. No restart, no recompile.</p>
+
+                <ul class="check-list">
+                    <li><span class="icon">✓</span>Compact &amp; Expanded display modes</li>
+                    <li><span class="icon">✓</span>Multi-GPU &amp; multi-monitor detection</li>
+                    <li><span class="icon">✓</span>14+ ANSI color codes per module</li>
+                    <li><span class="icon">✓</span>Predictive disk read/write performance</li>
+                    <li><span class="icon">✓</span>Zero network calls — fully offline</li>
+                    <li><span class="icon">✓</span>Self-healing: missing files auto-recreated</li>
+                </ul>
+
+                <a href="#install" class="btn btn-primary" id="installLinkBtn">
+                    <span>🚀</span>
+                    <span>Get Started</span>
                 </a>
-                <a href="https://github.com/InterCentury/BinaryFetch" target="_blank" class="btn btn-secondary">
-                    <span>⭐</span>
-                    <span>View on GitHub</span>
-                </a>
-            </div>
-        </div>
-        <div class="scroll-indicator">
-            <span></span>
-        </div>
-    </section>
-
-    <!-- ==========================================
-         FEATURES SECTION
-         ========================================== -->
-    <section class="features">
-        <div class="section-header fade-in">
-            <div class="label">Features</div>
-            <h2>Built for Developers</h2>
-            <p>Engineered with simplicity, reliability, and extreme customization at its core.</p>
-        </div>
-        <div class="features-grid">
-            <div class="feature-card fade-in">
-                <div class="feature-icon">🧩</div>
-                <h3>Modular Architecture</h3>
-                <p>Clean separation between data, logic, and presentation. Each component works independently for maximum reliability and maintainability.</p>
             </div>
 
-            <div class="feature-card fade-in">
-                <div class="feature-icon">🛡️</div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================================
+     WHY BINARYFETCH
+================================================================ -->
+<section class="section" id="features">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-tag">Why BinaryFetch</div>
+            <h2 class="section-title">Engineering that <span class="grad">never breaks.</span></h2>
+            <p class="section-desc">Every architectural decision is made with reliability first — so you can customize freely without fear.</p>
+        </div>
+
+        <div class="why-grid">
+            <div class="why-card reveal" style="transition-delay:0.05s">
+                <div class="why-icon">🛡️</div>
                 <h3>Self-Healing Engine</h3>
-                <p>Missing or corrupted files are automatically recreated. First run always succeeds, guaranteed. Zero configuration headaches.</p>
+                <p>Deleted <code style="color:var(--cyan);font-family:var(--mono)">BinaryArt.txt</code>? Config missing? BinaryFetch auto-recreates everything from bundled defaults. The program <strong>never crashes</strong> due to missing user files.</p>
+            </div>
+            <div class="why-card reveal" style="transition-delay:0.1s">
+                <div class="why-icon">🧩</div>
+                <h3>Module-Per-Domain</h3>
+                <p>34 independent classes, 158 functions, zero coupling. Each system category is its own sealed module — no orchestration spaghetti, no hidden dependencies.</p>
+            </div>
+            <div class="why-card reveal" style="transition-delay:0.15s">
+                <div class="why-icon">🎨</div>
+                <h3>Extreme Customization</h3>
+                <p>300+ individual JSON settings. Toggle any module, set per-character ANSI colors in your ASCII art, choose compact or detailed view — all without touching a line of C++.</p>
+            </div>
+            <div class="why-card reveal" style="transition-delay:0.2s">
+                <div class="why-icon">⚡</div>
+                <h3>Always First-Run Ready</h3>
+                <p>No setup wizard, no installer prompts. Extract and run. BinaryFetch bootstraps itself completely on first launch, with sensible defaults already in place.</p>
+            </div>
+            <div class="why-card reveal" style="transition-delay:0.25s">
+                <div class="why-icon">🖥️</div>
+                <h3>Deep Hardware Visibility</h3>
+                <p>Reads CPU/GPU/RAM/Disk/Network/Audio/Battery. Detects all connected monitors, all GPUs simultaneously. Even predicts disk read/write speeds before the OS reports them.</p>
+            </div>
+            <div class="why-card reveal" style="transition-delay:0.3s">
+                <div class="why-icon">🌐</div>
+                <h3>Community Shareable</h3>
+                <p>Your config is just two files — JSON + ASCII art. Zip them up and share your exact setup with anyone in the community. No databases, no profiles, no accounts.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================================
+     INSTALLATION
+================================================================ -->
+<section class="section" id="install" style="background: rgba(0,0,0,0.25);">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-tag">Installation</div>
+            <h2 class="section-title">Up and running in <span class="grad">60 seconds.</span></h2>
+            <p class="section-desc">No package manager, no admin install. Just download the release, place it anywhere, and run it.</p>
+        </div>
+
+        <div class="install-steps reveal">
+            <div class="install-step">
+                <div class="step-num">1</div>
+                <h3>Download</h3>
+                <p>Grab <code style="color:var(--cyan);font-family:var(--mono)">BinaryFetch.exe</code> from the GitHub Releases page.</p>
+            </div>
+            <div class="install-step">
+                <div class="step-num">2</div>
+                <h3>Place &amp; Run</h3>
+                <p>Put it in any folder. Open a terminal in that directory and execute the binary.</p>
+            </div>
+            <div class="install-step">
+                <div class="step-num">3</div>
+                <h3>Customize</h3>
+                <p>Edit the two auto-generated files at <code style="color:var(--orange);font-family:var(--mono)">C:\Users\Public\BinaryFetch\</code></p>
+            </div>
+        </div>
+
+        <div class="install-code-block reveal" style="transition-delay:0.2s">
+            <div class="code-bar">
+                <span class="code-dot r"></span>
+                <span class="code-dot a"></span>
+                <span class="code-dot g"></span>
+                <span class="code-label">PowerShell — First Run</span>
+            </div>
+            <pre class="code-body"><span class="cmt"># Navigate to the folder where you placed BinaryFetch.exe</span>
+<span class="fn">cd</span> <span class="pth">C:\Tools\BinaryFetch</span>
+
+<span class="cmt"># Run BinaryFetch</span>
+<span class="fn">.\BinaryFetch.exe</span>
+
+<span class="cmt"># On first run, config files are auto-created here:</span>
+<span class="cmt">#   C:\Users\Public\BinaryFetch\BinaryFetch_Config.json</span>
+<span class="cmt">#   C:\Users\Public\BinaryFetch\BinaryArt.txt</span>
+
+<span class="cmt"># Customize colors in BinaryArt.txt using $1–$14 tokens:</span>
+<span class="val">$1</span>⠀⣿⣿⣿⣿  <span class="cmt"># $1 = Red, $2 = Green, $3 = Yellow...</span>
+<span class="val">$2</span>⠀⣿⣿⣿⣿<span class="val">$3</span>⣿⣿⣿⣿  <span class="cmt"># Mix colors mid-line</span></pre>
+        </div>
+
+        <div class="path-pill reveal" style="transition-delay:0.3s">
+            📁 Config location: <strong>C:\Users\Public\BinaryFetch\</strong>
+        </div>
+
+        <div style="margin-top:2.5rem;text-align:center;" class="reveal" style="transition-delay:0.4s">
+            <a href="https://github.com/BinaryFetch-CLI/BinaryFetch/releases/tag/v1.3"
+               class="btn btn-primary" id="installDownloadBtn">
+                <span>⬇</span>
+                <span>Download BinaryFetch.exe</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================================
+     CUSTOMIZATION
+================================================================ -->
+<section class="section" id="customization">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-tag">Customization</div>
+            <h2 class="section-title">Two files. <span class="grad">Infinite looks.</span></h2>
+            <p class="section-desc">Everything you can change lives in two plain-text files. No IDE required.</p>
+        </div>
+
+        <div class="custom-grid">
+            <div class="reveal">
+                <div class="section-tag" style="margin-bottom:1rem">🎨 ANSI Color Codes</div>
+                <div class="color-table-wrap">
+                    <table class="color-table" aria-label="ANSI color code reference">
+                        <thead>
+                            <tr>
+                                <th>Token</th>
+                                <th>Color</th>
+                                <th>Token</th>
+                                <th>Color</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><span class="code-token">$1</span></td><td><span class="color-swatch" style="background:#e74c3c"></span>Red</td><td><span class="code-token">$8</span></td><td><span class="color-swatch" style="background:#ff5f57"></span>Bright Red</td></tr>
+                            <tr><td><span class="code-token">$2</span></td><td><span class="color-swatch" style="background:#2ecc71"></span>Green</td><td><span class="code-token">$9</span></td><td><span class="color-swatch" style="background:#28c840"></span>Bright Green</td></tr>
+                            <tr><td><span class="code-token">$3</span></td><td><span class="color-swatch" style="background:#f1c40f"></span>Yellow</td><td><span class="code-token">$10</span></td><td><span class="color-swatch" style="background:#febc2e"></span>Bright Yellow</td></tr>
+                            <tr><td><span class="code-token">$4</span></td><td><span class="color-swatch" style="background:#3498db"></span>Blue</td><td><span class="code-token">$11</span></td><td><span class="color-swatch" style="background:#4a9eff"></span>Bright Blue</td></tr>
+                            <tr><td><span class="code-token">$5</span></td><td><span class="color-swatch" style="background:#9b59b6"></span>Magenta</td><td><span class="code-token">$12</span></td><td><span class="color-swatch" style="background:#c678dd"></span>Bright Magenta</td></tr>
+                            <tr><td><span class="code-token">$6</span></td><td><span class="color-swatch" style="background:#00bcd4"></span>Cyan</td><td><span class="code-token">$13</span></td><td><span class="color-swatch" style="background:#00d4ff"></span>Bright Cyan</td></tr>
+                            <tr><td><span class="code-token">$7</span></td><td><span class="color-swatch" style="background:#bdc3c7"></span>White</td><td><span class="code-token">$14</span></td><td><span class="color-swatch" style="background:#ffffff"></span>Bright White</td></tr>
+                            <tr><td colspan="2"></td><td><span class="code-token">$15</span></td><td>Reset</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <div class="feature-card fade-in">
-              <div class="feature-icon">🎨</div>
-              <h3>Extreme Customization</h3>
-              <p>Full control over ASCII art, layout, colors, and modules. Only two user-editable files to master. Endless possibilities.</p>
-          </div>
+            <div class="custom-info reveal" style="transition-delay:0.15s">
+                <h3>Only 2 files to master</h3>
+                <p>All user customization lives under <code style="color:var(--orange);font-family:var(--mono)">C:\Users\Public\BinaryFetch\</code> — editable in any text editor.</p>
 
-          <div class="feature-card fade-in">
-              <div class="feature-icon">📊</div>
-              <h3>Compact & Detailed</h3>
-              <p>Switch between compact and expanded modes. Get the info you need, when you need it. Perfect for quick checks or deep dives.</p>
-          </div>
-
-          <div class="feature-card fade-in">
-              <div class="feature-icon">💻</div>
-              <h3>Multi-Device Support</h3>
-              <p>Detects multi-GPU setups, multiple monitors, audio devices, and power configurations automatically. No manual setup required.</p>
-          </div>
-  
-          <div class="feature-card fade-in">
-              <div class="feature-icon">🌐</div>
-              <h3>Community Shareable</h3>
-              <p>Create and share custom profiles with the community. Endless possibilities for personalization and collaboration.</p>
-          </div>
-      </div>
-  </section>
-
-
-        
-        <!-- ==========================================
-             SHOWCASE SECTION
-             ========================================== -->
-        <section class="showcase">
-            <div class="showcase-container">
-                <div class="showcase-image fade-in">
-                    <!-- REPLACE THIS WITH YOUR BINARYFETCH SCREENSHOT -->
-                    <!-- <img src="./assets/images/binaryfetch-preview.png" alt="BinaryFetch in action"> -->
-                    <p style="color: rgba(0, 217, 255, 0.5); font-size: 3rem;">🖼️</p>
+                <div class="file-pill">
+                    <span class="file-pill-icon">🎭</span>
+                    <div>
+                        <div class="file-pill-name">BinaryArt.txt</div>
+                        <div class="file-pill-desc">ASCII art with per-character color codes ($1–$15)</div>
+                    </div>
                 </div>
-                <div class="showcase-content fade-in">
-                    <h2><span class="highlight">Simplicity</span> First</h2>
-                    <p>BinaryFetch follows a philosophy of radical simplicity. No complex configuration files, no confusing dependency chains, no hidden settings.</p>
-                    <ul class="showcase-list">
-                        <li>Only two files you need to edit: BinaryArt.txt and BinaryFetch_Config.json</li>
-                        <li>ANSI color system using simple $1 - $15 tokens</li>
-                        <li>Predictive disk performance analysis built-in</li>
-                        <li>Clean ASCII rendering pipeline for beautiful output</li>
-                        <li>Zero hard dependencies between modules</li>
-                    </ul>
-                    <a href="docs.html" class="btn btn-primary">
-                        <span>📖</span>
-                        <span>Learn How It Works</span>
-                    </a>
+                <div class="file-pill">
+                    <span class="file-pill-icon">⚙️</span>
+                    <div>
+                        <div class="file-pill-name">BinaryFetch_Config.json</div>
+                        <div class="file-pill-desc">Module enable/disable, colors, display modes — 300+ settings</div>
+                    </div>
+                </div>
+
+                <p style="margin-top:1.5rem">Use <span class="code-token">$n</span> anywhere in <code style="font-family:var(--mono);color:var(--cyan)">BinaryArt.txt</code> to switch ANSI color mid-line. Mix and match for vivid, multi-color ASCII art with zero effort.</p>
+
+                <div class="install-code-block" style="margin-top:1.5rem">
+                    <div class="code-bar">
+                        <span class="code-dot r"></span><span class="code-dot a"></span><span class="code-dot g"></span>
+                        <span class="code-label">BinaryArt.txt example</span>
+                    </div>
+                    <pre class="code-body" style="font-size:0.78rem;line-height:1.7"><span class="val">$2</span>⠀⣿⣿⣿⣿⣿⣿⣿⣿  <span class="cmt">← Full line green</span>
+<span class="val">$2</span>⠀⣿⣿⣿<span class="val">$3</span>⣿⣿⣿<span class="val">$1</span>⣿⣿  <span class="cmt">← Green → Yellow → Red</span>
+⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿  <span class="cmt">← Default terminal color</span></pre>
                 </div>
             </div>
-        </section>
-        
-        <!-- ==========================================
-             CTA SECTION
-             ========================================== -->
-        <section class="cta-section">
-            <div class="cta-content fade-in">
-                <h2>Ready to Get Started?</h2>
-                <p>Join developers who trust BinaryFetch for reliable system information. Free forever, open-source, and built by the community.</p>
-                <div class="cta-buttons">
-                    <a href="download.html" class="btn btn-primary">
-                        <span>⬇</span>
-                        <span>Download Now</span>
-                    </a>
-                    <a href="docs.html" class="btn btn-secondary">
-                        <span>📚</span>
-                        <span>Read Documentation</span>
-                    </a>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================================
+     MODULES GRID
+================================================================ -->
+<section class="section" id="modules" style="background:rgba(0,0,0,0.2)">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-tag">Modules</div>
+            <h2 class="section-title">34 modules. <span class="grad">All independent.</span></h2>
+            <p class="section-desc">Toggle any module on or off from JSON. Each has its own color settings and granular sub-controls.</p>
+        </div>
+
+        <div class="modules-tabs reveal" role="tablist" aria-label="Module categories">
+            <button class="tab-btn active" data-tab="core" role="tab" id="tabCore" aria-selected="true">📊 Core (12)</button>
+            <button class="tab-btn" data-tab="detail" role="tab" id="tabDetail" aria-selected="false">🔍 Detailed (12)</button>
+        </div>
+
+        <div class="modules-grid" id="modulesGrid" aria-live="polite">
+            <!-- Core modules -->
+            <div class="module-card show" data-group="core">
+                <span class="module-num">CORE · 01</span>
+                <h4>Header Module</h4>
+                <p>System banner and logo display — the first thing you see on every run.</p>
+            </div>
+            <div class="module-card show" data-group="core">
+                <span class="module-num">CORE · 02</span>
+                <h4>Compact Time</h4>
+                <p>Real-time clock display with day, date, week number, and leap year status.</p>
+            </div>
+            <div class="module-card show" data-group="core">
+                <span class="module-num">CORE · 03</span>
+                <h4>Compact OS</h4>
+                <p>OS name, build, architecture, and uptime — the essential system fingerprint.</p>
+            </div>
+            <div class="module-card show" data-group="core">
+                <span class="module-num">CORE · 04</span>
+                <h4>Compact CPU</h4>
+                <p>Processor name, core count, thread count, and current clock speed.</p>
+            </div>
+            <div class="module-card show" data-group="core">
+                <span class="module-num">CORE · 05</span>
+                <h4>Compact GPU</h4>
+                <p>Graphics card overview — name, VRAM, usage percent, and frequency.</p>
+            </div>
+            <div class="module-card show" data-group="core">
+                <span class="module-num">CORE · 06</span>
+                <h4>Compact Screen</h4>
+                <p>Display info: native resolution, refresh rate, scale percent, and upscale status.</p>
+            </div>
+            <div class="module-card show" data-group="core">
+                <span class="module-num">CORE · 07</span>
+                <h4>Compact Memory</h4>
+                <p>RAM usage summary — total, free, and used percentage at a glance.</p>
+            </div>
+            <div class="module-card show" data-group="core">
+                <span class="module-num">CORE · 08</span>
+                <h4>Compact Audio</h4>
+                <p>Active input and output audio device with current status flags.</p>
+            </div>
+            <div class="module-card show" data-group="core">
+                <span class="module-num">CORE · 09</span>
+                <h4>Compact Performance</h4>
+                <p>CPU, GPU, RAM, and Disk utilization — all four at once in compact form.</p>
+            </div>
+            <div class="module-card show" data-group="core">
+                <span class="module-num">CORE · 10</span>
+                <h4>Compact User</h4>
+                <p>Username, domain, and admin status for the current session.</p>
+            </div>
+            <div class="module-card show" data-group="core">
+                <span class="module-num">CORE · 11</span>
+                <h4>Compact Network</h4>
+                <p>Connected network name, type (WiFi/Ethernet), and local IP address.</p>
+            </div>
+            <div class="module-card show" data-group="core">
+                <span class="module-num">CORE · 12</span>
+                <h4>Compact Disk</h4>
+                <p>Storage usage summary across all detected drives with capacity data.</p>
+            </div>
+
+            <!-- Detailed modules -->
+            <div class="module-card" data-group="detail">
+                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 01</span>
+                <h4>Detailed Memory</h4>
+                <p>In-depth RAM analysis including module type, capacity, and speed per slot.</p>
+            </div>
+            <div class="module-card" data-group="detail">
+                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 02</span>
+                <h4>Detailed Storage</h4>
+                <p>Per-drive info: used/total space, filesystem, read/write speed, and storage type.</p>
+            </div>
+            <div class="module-card" data-group="detail">
+                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 03</span>
+                <h4>Network Info</h4>
+                <p>Full network details: public IP, MAC address, locale, upload and download speeds.</p>
+            </div>
+            <div class="module-card" data-group="detail">
+                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 04</span>
+                <h4>Dummy Network Info</h4>
+                <p>Fallback display for when no network connection is detected — graceful degradation.</p>
+            </div>
+            <div class="module-card" data-group="detail">
+                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 05</span>
+                <h4>OS Info</h4>
+                <p>Extended OS details: kernel version, install date, serial number, and architecture.</p>
+            </div>
+            <div class="module-card" data-group="detail">
+                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 06</span>
+                <h4>CPU Info</h4>
+                <p>Full processor specs — base speed, virtualization, L1/L2/L3 cache, sockets.</p>
+            </div>
+            <div class="module-card" data-group="detail">
+                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 07</span>
+                <h4>GPU Info</h4>
+                <p>Graphics card deep dive: vendor, driver version, temperature, and core count.</p>
+            </div>
+            <div class="module-card" data-group="detail">
+                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 08</span>
+                <h4>Display Info</h4>
+                <p>Monitor configuration: native vs current resolution, DSR, aspect ratio, scale.</p>
+            </div>
+            <div class="module-card" data-group="detail">
+                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 09</span>
+                <h4>BIOS / Motherboard</h4>
+                <p>Firmware and hardware identity — BIOS vendor, version, date, and board model.</p>
+            </div>
+            <div class="module-card" data-group="detail">
+                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 10</span>
+                <h4>User Info</h4>
+                <p>User account details: username, computer name, and domain name.</p>
+            </div>
+            <div class="module-card" data-group="detail">
+                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 11</span>
+                <h4>Performance Info</h4>
+                <p>System performance metrics: CPU/GPU/RAM/Disk percentages and full uptime.</p>
+            </div>
+            <div class="module-card" data-group="detail">
+                <span class="module-num" style="color:var(--green);background:rgba(0,255,136,0.08)">DETAIL · 12</span>
+                <h4>Audio &amp; Power</h4>
+                <p>All audio input/output devices plus battery percent, charging status, and type.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================================
+     ARCHITECTURE STATS
+================================================================ -->
+<section class="section">
+    <div class="container">
+        <div class="section-header reveal" style="text-align:center">
+            <div class="section-tag">Architecture</div>
+            <h2 class="section-title">The numbers <span class="grad">behind the binary.</span></h2>
+        </div>
+
+        <div class="arch-grid">
+            <div class="arch-card reveal" style="transition-delay:0s">
+                <div class="arch-num grad" data-target="34" id="arch0">0</div>
+                <div class="arch-label">Classes</div>
+            </div>
+            <div class="arch-card reveal" style="transition-delay:0.08s">
+                <div class="arch-num" style="color:var(--green)" data-target="158" id="arch1">0</div>
+                <div class="arch-label">Functions</div>
+            </div>
+            <div class="arch-card reveal" style="transition-delay:0.16s">
+                <div class="arch-num" style="color:var(--purple)" data-target="21" id="arch2">0</div>
+                <div class="arch-label">Objects</div>
+            </div>
+            <div class="arch-card reveal" style="transition-delay:0.24s">
+                <div class="arch-num" style="color:var(--orange)" data-target="8" id="arch3">0</div>
+                <div class="arch-label">Structures</div>
+            </div>
+            <div class="arch-card reveal" style="transition-delay:0.32s">
+                <div class="arch-num" style="color:var(--cyan)" data-target="5" id="arch4">0</div>
+                <div class="arch-label">Lambda Helpers</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================================
+     FAQ
+================================================================ -->
+<section class="section" id="faq" style="background:rgba(0,0,0,0.2)">
+    <div class="container">
+        <div class="section-header reveal" style="text-align:center">
+            <div class="section-tag">FAQ</div>
+            <h2 class="section-title">Common <span class="grad">questions.</span></h2>
+        </div>
+
+        <div class="faq-list reveal" style="transition-delay:0.1s">
+            <div class="faq-item">
+                <button class="faq-trigger" id="faq1-btn" aria-expanded="false" aria-controls="faq1-body">
+                    Will BinaryFetch ever crash due to missing files?
+                    <span class="faq-arrow" aria-hidden="true">+</span>
+                </button>
+                <div class="faq-body" id="faq1-body" role="region" aria-labelledby="faq1-btn">
+                    <div class="faq-body-inner">No. BinaryFetch's self-healing system automatically recreates any missing files — the ASCII art file, the JSON config, or the containing directory. The program is engineered to always succeed on first run and every run after, regardless of what the user deletes. The only exception is manually broken JSON syntax.</div>
                 </div>
             </div>
-        </section>
-        
-        <!-- ==========================================
-             FOOTER
-             ========================================== -->
-        <footer>
-            <div class="footer-container">
-                <div class="footer-section">
-                    <h3>BinaryFetch</h3>
-                    <p>A modern CLI system information tool for Windows. Free forever, open-source, built by developers for developers.</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Quick Links</h3>
-                    <a href="index.html">Home</a>
-                    <a href="docs.html">Documentation</a>
-                    <a href="download.html">Download</a>
-                    <a href="contributors.html">Contributors</a>
-                </div>
-                <div class="footer-section">
-                    <h3>Community</h3>
-                    <a href="https://github.com/InterCentury/BinaryFetch" target="_blank">GitHub Repository</a>
-                    <a href="https://github.com/InterCentury/BinaryFetch/issues" target="_blank">Report Issues</a>
-                    <a href="https://github.com/InterCentury" target="_blank">Founder Profile</a>
-                </div>
-                <div class="footer-section">
-                    <h3>Resources</h3>
-                    <a href="docs.html">Getting Started</a>
-                    <a href="docs.html#customization">Customization Guide</a>
-                    <a href="https://github.com/InterCentury/BinaryFetch/releases" target="_blank">Release Notes</a>
+            <div class="faq-item">
+                <button class="faq-trigger" id="faq2-btn" aria-expanded="false" aria-controls="faq2-body">
+                    Does BinaryFetch run in the background or collect data?
+                    <span class="faq-arrow" aria-hidden="true">+</span>
+                </button>
+                <div class="faq-body" id="faq2-body" role="region" aria-labelledby="faq2-btn">
+                    <div class="faq-body-inner">No. BinaryFetch is a pure CLI tool — it runs once when you invoke it and exits completely when it finishes. It does not install any services, does not run in the background, and does not collect, transmit, or store any user data. All information it reads stays on your machine.</div>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>© 2025 BinaryFetch. Open-source under MIT License. Built with ❤️ by <a href="https://github.com/InterCentury" target="_blank">InterCentury</a>.</p>
+            <div class="faq-item">
+                <button class="faq-trigger" id="faq3-btn" aria-expanded="false" aria-controls="faq3-body">
+                    Is there a Linux or macOS version?
+                    <span class="faq-arrow" aria-hidden="true">+</span>
+                </button>
+                <div class="faq-body" id="faq3-body" role="region" aria-labelledby="faq3-btn">
+                    <div class="faq-body-inner">BinaryFetch is currently Windows-only. The hardware detection layer uses Windows-specific APIs (WMI, WinAPI) which do not have direct cross-platform equivalents. There is no current development plan for a Linux or macOS port, though the modular architecture is designed to be adaptable.</div>
+                </div>
             </div>
-        </footer>
-        
-        <!-- ==========================================
-             JAVASCRIPT - Interactive Behaviors
-             ========================================== -->
-        <script>
-            // Navbar scroll effect with smooth shadow transition
-            const navbar = document.getElementById('navbar');
-            let lastScroll = 0;
-        
-            window.addEventListener('scroll', () => {
-                const currentScroll = window.pageYOffset;
-                
-                if (currentScroll > 100) {
-                    navbar.classList.add('scrolled');
-                } else {
-                    navbar.classList.remove('scrolled');
-                }
-                
-                lastScroll = currentScroll;
+            <div class="faq-item">
+                <button class="faq-trigger" id="faq4-btn" aria-expanded="false" aria-controls="faq4-body">
+                    How do I customize the ASCII art?
+                    <span class="faq-arrow" aria-hidden="true">+</span>
+                </button>
+                <div class="faq-body" id="faq4-body" role="region" aria-labelledby="faq4-btn">
+                    <div class="faq-body-inner">Open <code style="color:var(--cyan);font-family:var(--mono)">C:\Users\Public\BinaryFetch\BinaryArt.txt</code> in any text editor. Paste in any ASCII or Braille block art. Prefix lines or sections with <code style="color:var(--cyan);font-family:var(--mono)">$1</code> through <code style="color:var(--cyan);font-family:var(--mono)">$14</code> to apply ANSI colors. Use <code style="color:var(--cyan);font-family:var(--mono)">$15</code> to reset. Save and re-run BinaryFetch. That's it.</div>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-trigger" id="faq5-btn" aria-expanded="false" aria-controls="faq5-body">
+                    How do I disable specific modules?
+                    <span class="faq-arrow" aria-hidden="true">+</span>
+                </button>
+                <div class="faq-body" id="faq5-body" role="region" aria-labelledby="faq5-btn">
+                    <div class="faq-body-inner">Open <code style="color:var(--cyan);font-family:var(--mono)">BinaryFetch_Config.json</code> and set any module's <code style="color:var(--green);font-family:var(--mono)">"enabled"</code> property to <code style="color:var(--orange);font-family:var(--mono)">false</code>. The module will be completely skipped on the next run. You can also toggle individual sub-sections and configure per-element colors within the same file — over 300 individual settings are available.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================================
+     DOWNLOAD CTA
+================================================================ -->
+<section class="section cta-section" id="download">
+    <div class="container">
+        <div class="reveal">
+            <h2 class="section-title">Ready to <span class="grad">fetch?</span></h2>
+            <p>Free forever. No install. No telemetry. Just run the binary and see your system like never before.</p>
+            <a href="https://github.com/BinaryFetch-CLI/BinaryFetch/releases/tag/v1.3"
+               class="download-big" id="ctaDownloadBtn">
+                <span class="dl-icon">⬇</span>
+                Download BinaryFetch v1.3
+            </a>
+            <p class="cta-meta">
+                Windows 10/11 · x64 · ~500 KB ·
+                <a href="https://github.com/BinaryFetch-CLI/BinaryFetch" target="_blank" rel="noopener">View source on GitHub</a>
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================================
+     FOOTER
+================================================================ -->
+<footer>
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <a href="index.html" class="nav-logo" style="display:inline-block;margin-bottom:0.2rem">BinaryFetch</a>
+            <p>An advanced Windows system information fetcher written in C++. Free forever, open-source, built by the community.</p>
+        </div>
+        <div class="footer-col">
+            <h4>Navigation</h4>
+            <a href="#features">Features</a>
+            <a href="#preview">Preview</a>
+            <a href="#install">Install</a>
+            <a href="#modules">Modules</a>
+            <a href="#faq">FAQ</a>
+        </div>
+        <div class="footer-col">
+            <h4>Project</h4>
+            <a href="https://github.com/BinaryFetch-CLI/BinaryFetch" target="_blank" rel="noopener">GitHub Repository</a>
+            <a href="https://github.com/BinaryFetch-CLI/BinaryFetch/releases" target="_blank" rel="noopener">All Releases</a>
+            <a href="https://github.com/BinaryFetch-CLI/BinaryFetch/issues" target="_blank" rel="noopener">Report Issues</a>
+            <a href="contributors.html">Contributors</a>
+        </div>
+        <div class="footer-col">
+            <h4>Download</h4>
+            <a href="https://github.com/BinaryFetch-CLI/BinaryFetch/releases/tag/v1.3" target="_blank" rel="noopener">Latest Release (v1.3)</a>
+            <a href="https://github.com/BinaryFetch-CLI/BinaryFetch/releases" target="_blank" rel="noopener">Release History</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>© 2025 BinaryFetch · MIT License</span>
+        <span>Built with ❤️ by <a href="https://github.com/InterCentury" target="_blank" rel="noopener">InterCentury</a></span>
+    </div>
+</footer>
+
+<!-- ================================================================
+     JAVASCRIPT
+================================================================ -->
+<script>
+'use strict';
+
+/* ──────────────────────────────────────────────────────────
+   1. PHYSICS MOMENTUM SCROLL
+   Uses requestAnimationFrame with exponential velocity decay.
+   Start scrolling → smooth acceleration to match user speed.
+   Stop scrolling → gradual coast to rest.
+────────────────────────────────────────────────────────── */
+(function () {
+    // Only override on non-touch, non-reduced-motion devices
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isTouch = ('ontouchstart' in window);
+    if (prefersReduced || isTouch) return;
+
+    let targetY  = window.scrollY;
+    let currentY = window.scrollY;
+    let velocity = 0;
+    let rafId    = null;
+    let isScrolling = false;
+    let scrollEndTimer = null;
+
+    const FRICTION  = 0.085; // lower = more slide (0.06–0.12 range)
+    const ACCEL     = 0.18;  // how fast currentY catches targetY
+
+    function tick() {
+        // Spring toward target
+        const delta = targetY - currentY;
+        currentY += delta * ACCEL;
+
+        window.scrollTo(0, currentY);
+
+        // Keep running if still moving meaningfully
+        if (Math.abs(delta) > 0.5) {
+            rafId = requestAnimationFrame(tick);
+        } else {
+            currentY = targetY;
+            window.scrollTo(0, currentY);
+            rafId = null;
+        }
+    }
+
+    window.addEventListener('wheel', (e) => {
+        e.preventDefault();
+
+        const scrollAmount = e.deltaY * (e.deltaMode === 1 ? 30 : 1);
+        targetY = Math.max(0, Math.min(
+            document.documentElement.scrollHeight - window.innerHeight,
+            targetY + scrollAmount
+        ));
+
+        if (!rafId) {
+            currentY = window.scrollY;
+            rafId = requestAnimationFrame(tick);
+        }
+    }, { passive: false });
+
+    // Sync on other scroll sources (keyboard, scrollbar drag)
+    window.addEventListener('scroll', () => {
+        if (!rafId) {
+            targetY = window.scrollY;
+            currentY = window.scrollY;
+        }
+    }, { passive: true });
+})();
+
+
+/* ──────────────────────────────────────────────────────────
+   2. NAVBAR SCROLL EFFECT
+────────────────────────────────────────────────────────── */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+}, { passive: true });
+
+
+/* ──────────────────────────────────────────────────────────
+   3. HAMBURGER MENU
+────────────────────────────────────────────────────────── */
+const hamburger = document.getElementById('hamburger');
+const navLinks  = document.getElementById('navLinks');
+
+hamburger.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('open');
+    hamburger.classList.toggle('open', open);
+    hamburger.setAttribute('aria-expanded', open);
+});
+
+navLinks.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+        navLinks.classList.remove('open');
+        hamburger.classList.remove('open');
+        hamburger.setAttribute('aria-expanded', 'false');
+    });
+});
+
+
+/* ──────────────────────────────────────────────────────────
+   4. SMOOTH ANCHOR SCROLL (for hash links inside the page)
+────────────────────────────────────────────────────────── */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (!target) return;
+        e.preventDefault();
+        const top = target.getBoundingClientRect().top + window.scrollY - 68;
+        // Push target into physics scroll
+        window.dispatchEvent(new WheelEvent('wheel', {
+            deltaY: top - window.scrollY,
+            deltaMode: 0,
+            bubbles: true,
+            cancelable: true
+        }));
+        // Fallback for reduced-motion / touch
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+});
+
+
+/* ──────────────────────────────────────────────────────────
+   5. INTERSECTION OBSERVER — REVEAL + COUNTERS
+────────────────────────────────────────────────────────── */
+const countersDone = new Set();
+
+function animateCounter(el, target, suffix = '') {
+    if (countersDone.has(el)) return;
+    countersDone.add(el);
+    const start = performance.now();
+    const duration = 1200 + Math.random() * 400;
+
+    function step(now) {
+        const t = Math.min((now - start) / duration, 1);
+        // ease-out cubic
+        const progress = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(progress * target) + suffix;
+        if (t < 1) requestAnimationFrame(step);
+        else el.textContent = target + suffix;
+    }
+    requestAnimationFrame(step);
+}
+
+const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('visible');
+
+        // Fire counters on stats bar
+        if (entry.target.closest('.stats-grid')) {
+            document.querySelectorAll('[data-target]').forEach(el => {
+                animateCounter(el, parseInt(el.dataset.target), el.id?.startsWith('stat2') ? '+' : '');
             });
-        
-            // Mobile menu toggle with smooth animation
-            const menuToggle = document.getElementById('menuToggle');
-            const navLinks = document.getElementById('navLinks');
-            
-            menuToggle.addEventListener('click', () => {
-                navLinks.classList.toggle('active');
-                menuToggle.classList.toggle('active');
+        }
+        // Fire counters on arch grid
+        if (entry.target.closest('.arch-grid') || entry.target.classList.contains('arch-card')) {
+            document.querySelectorAll('.arch-num[data-target]').forEach(el => {
+                animateCounter(el, parseInt(el.dataset.target));
             });
-        
-            // Close mobile menu when clicking a link
-            document.querySelectorAll('.nav-links a').forEach(link => {
-                link.addEventListener('click', () => {
-                    navLinks.classList.remove('active');
-                    menuToggle.classList.remove('active');
-                });
-            });
-        
-            // Smooth scroll for all anchor links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                });
-            });
-        
-            // Scroll indicator click to scroll down
-            const scrollIndicator = document.querySelector('.scroll-indicator');
-            if (scrollIndicator) {
-                scrollIndicator.addEventListener('click', () => {
-                    window.scrollTo({
-                        top: window.innerHeight,
-                        behavior: 'smooth'
-                    });
-                });
+        }
+    });
+}, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+
+/* ──────────────────────────────────────────────────────────
+   6. HERO TERMINAL TYPING ANIMATION
+────────────────────────────────────────────────────────── */
+(function () {
+    const typing   = document.getElementById('typingText');
+    const output   = document.getElementById('termOutput');
+    const cursor   = document.getElementById('cursor');
+
+    const sequence = [
+        { type: 'cmd', text: 'BinaryFetch.exe', delay: 80 },
+        { type: 'pause', ms: 500 },
+        { type: 'output', lines: [
+            { cls: 't-out', text: '' },
+            { cls: 't-acc', text: '  🍁 BinaryFetch v1.3 — System Information' },
+            { cls: 't-out', text: '  ─────────────────────────────────────────' },
+            { cls: 't-out', text: '  OS      Windows 11 Pro  ·  x64' },
+            { cls: 't-out', text: '  CPU     AMD Ryzen 7  ·  8C/16T  ·  4.2 GHz' },
+            { cls: 't-out', text: '  GPU     NVIDIA RTX 3070  ·  8 GB VRAM' },
+            { cls: 't-out', text: '  RAM     16 GB  ·  67% used' },
+            { cls: 't-out', text: '  NET     Home-WiFi  ·  192.168.1.42' },
+            { cls: 't-out', text: '  AUDIO   Headphones  ·  Microphone' },
+            { cls: 't-acc', text: '  ✓ Self-healing enabled  ·  Config OK' },
+        ]},
+    ];
+
+    let running = false;
+
+    async function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    async function typeText(text, delayMs) {
+        for (const ch of text) {
+            typing.textContent += ch;
+            await sleep(delayMs + Math.random() * 30);
+        }
+    }
+
+    async function showOutput(lines) {
+        for (const line of lines) {
+            await sleep(90);
+            const div = document.createElement('div');
+            div.className = line.cls;
+            div.textContent = line.text;
+            output.appendChild(div);
+        }
+    }
+
+    async function run() {
+        if (running) return;
+        running = true;
+        await sleep(900);
+
+        for (const step of sequence) {
+            if (step.type === 'cmd') {
+                await typeText(step.text, step.delay);
+            } else if (step.type === 'pause') {
+                await sleep(step.ms);
+            } else if (step.type === 'output') {
+                cursor.style.display = 'none';
+                await showOutput(step.lines);
             }
-        
-            // Intersection Observer for fade-in animations
-            // Elements with class "fade-in" will animate when scrolled into view
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -100px 0px'
-            };
-        
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            }, observerOptions);
-        
-            // Observe all elements with fade-in class
-            document.querySelectorAll('.fade-in').forEach(el => {
-                observer.observe(el);
-            });
-        
-            // Add ripple effect to buttons on click
-            document.querySelectorAll('.btn').forEach(button => {
-                button.addEventListener('click', function(e) {
-                    const ripple = document.createElement('span');
-                    const rect = this.getBoundingClientRect();
-                    const size = Math.max(rect.width, rect.height);
-                    const x = e.clientX - rect.left - size / 2;
-                    const y = e.clientY - rect.top - size / 2;
-                    
-                    ripple.style.width = ripple.style.height = size + 'px';
-                    ripple.style.left = x + 'px';
-                    ripple.style.top = y + 'px';
-                    ripple.classList.add('ripple');
-                    
-                    this.appendChild(ripple);
-                    
-                    setTimeout(() => ripple.remove(), 600);
-                });
-            });
-        
-            // Parallax effect for hero section
-            window.addEventListener('scroll', () => {
-                const scrolled = window.pageYOffset;
-                const hero = document.querySelector('.hero-content');
-                if (hero && scrolled < window.innerHeight) {
-                    hero.style.transform = `translateY(${scrolled * 0.3}px)`;
-                    hero.style.opacity = 1 - (scrolled / window.innerHeight);
-                }
-            });
-        
-            // Add hover sound effect class toggle (for future enhancement)
-            document.querySelectorAll('.feature-card, .btn').forEach(el => {
-                el.addEventListener('mouseenter', function() {
-                    this.classList.add('hovered');
-                });
-                el.addEventListener('mouseleave', function() {
-                    this.classList.remove('hovered');
-                });
-            });
-        </script>
+        }
+    }
+
+    // Start as soon as the page loads
+    if (document.readyState === 'complete') run();
+    else window.addEventListener('load', run);
+})();
 
 
+/* ──────────────────────────────────────────────────────────
+   7. 3D TILT CARD
+────────────────────────────────────────────────────────── */
+(function () {
+    const wrap = document.getElementById('tiltWrap');
+    const card = document.getElementById('tiltCard');
+    if (!wrap || !card) return;
+
+    const MAX_ROTATE = 10; // degrees
+
+    wrap.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const mx = (e.clientX - rect.left) / rect.width;
+        const my = (e.clientY - rect.top)  / rect.height;
+
+        const rotX =  (0.5 - my) * MAX_ROTATE;
+        const rotY = -(0.5 - mx) * MAX_ROTATE;
+
+        card.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(1.03,1.03,1.03)`;
+        card.style.transition = 'none';
+        card.style.setProperty('--mx', `${mx * 100}%`);
+        card.style.setProperty('--my', `${my * 100}%`);
+    });
+
+    wrap.addEventListener('mouseleave', () => {
+        card.style.transition = 'transform 0.7s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s';
+        card.style.transform  = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)';
+        setTimeout(() => { card.style.transition = ''; }, 700);
+    });
+})();
 
 
+/* ──────────────────────────────────────────────────────────
+   8. MODULES TABS
+────────────────────────────────────────────────────────── */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+
+        document.querySelectorAll('.tab-btn').forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+
+        document.querySelectorAll('.module-card').forEach(card => {
+            const show = card.dataset.group === tab;
+            card.classList.toggle('show', show);
+        });
+    });
+});
 
 
+/* ──────────────────────────────────────────────────────────
+   9. FAQ ACCORDION
+────────────────────────────────────────────────────────── */
+document.querySelectorAll('.faq-trigger').forEach(trigger => {
+    trigger.addEventListener('click', () => {
+        const item = trigger.closest('.faq-item');
+        const body = item.querySelector('.faq-body');
+        const open = item.classList.toggle('open');
+
+        body.classList.toggle('open', open);
+        trigger.setAttribute('aria-expanded', open);
+    });
+});
 
 
+/* ──────────────────────────────────────────────────────────
+   10. RIPPLE EFFECT ON BUTTONS
+────────────────────────────────────────────────────────── */
+document.querySelectorAll('.btn, .download-big').forEach(btn => {
+    btn.addEventListener('click', e => {
+        const rect   = btn.getBoundingClientRect();
+        const size   = Math.max(rect.width, rect.height);
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple-el';
+        ripple.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px`;
+        btn.appendChild(ripple);
+        ripple.addEventListener('animationend', () => ripple.remove());
+    });
+});
 
 
+/* ──────────────────────────────────────────────────────────
+   11. HERO PARALLAX (subtle)
+────────────────────────────────────────────────────────── */
+(function () {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) return;
+
+    const heroInner = document.querySelector('.hero-inner');
+    window.addEventListener('scroll', () => {
+        const y = window.scrollY;
+        if (y < window.innerHeight && heroInner) {
+            heroInner.style.transform = `translateY(${y * 0.2}px)`;
+            heroInner.style.opacity   = `${1 - y / (window.innerHeight * 0.8)}`;
+        }
+    }, { passive: true });
+})();
+
+</script>
+</body>
+</html>
