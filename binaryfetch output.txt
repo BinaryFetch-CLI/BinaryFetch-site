@@ -1,0 +1,40 @@
+Administrator in ~ on  main via  v23.4.0 via 🐍 v3.12.8
+16:59:00 ❯ binaryfetch
+#####################  <<<<<<<<<<<<<<<<<<<<<<  ~>> BinaryFetch
+#####################  <<<<<<<<<<<<<<<<<<<<<<  📅 (Time: 16:59:05) (Date: 11 : August : 2026) (Week: 32 - Tuesday)
+#####################  <<<<<<<<<<<<<<<<<<<<<<  🚀 OS: Windows 11  10.0 (Build 26200) (64-bit) (uptime: 3h 35m)
+#####################  <<<<<<<<<<<<<<<<<<<<<<  🧠 CPU: AMD Ryzen 5 5600G with Radeon Graphics (6C/12T) @ 3.89 GHz
+#####################  <<<<<<<<<<<<<<<<<<<<<<  🔥 GPU: NVIDIA GeForce RTX 4070 SUPER (28%) (11.9941 GB) (@660 MHz)
+#####################  <<<<<<<<<<<<<<<<<<<<<<  📺 Display 1: DELL S2240L (3840 x 2160) (Scale: 175%) (@60Hz)
+#####################  <<<<<<<<<<<<<<<<<<<<<<  📺 Display 2: HP M22f FHD (3840 x 2160) (Scale: 175%) (@60Hz)
+#####################  <<<<<<<<<<<<<<<<<<<<<<  📟 Memory: (total: 47.2937 GB) (free: 26.4722 GB) (44%)
+#####################  <<<<<<<<<<<<<<<<<<<<<<  🎙️ Audio Input: Microphone (Maono PD 100U) [Active]
+#####################  <<<<<<<<<<<<<<<<<<<<<<  🎧 Audio Output: Headphones (MSL-906) [Active]
+                                               🔋 Performance: (CPU: 23%) (GPU: 34%) (RAM: 44%) (Disk: 98%)
+>>>>>>>>>>>>>>>>>>>>>  ######################  ☕ User: @coffee~ (Domain: InterCentury) (Type: Admin)
+>>>>>>>>>>>>>>>>>>>>>  ######################  🌐 Network: (Name: InterCentury) (Type: Ethernet) (ip: 192.168.137.1)
+>>>>>>>>>>>>>>>>>>>>>  ######################  📂 Disk Usage: (C: 98%) (D: 61%) (G: 96%) (H: 99%) (I: 71%) (Y: 66%)
+>>>>>>>>>>>>>>>>>>>>>  ######################  📊 Disk Cap: (C-237GB)(D-465GB)(G-112GB)(H-931GB)(I-110GB)(Y-465GB)
+>>>>>>>>>>>>>>>>>>>>>  ######################
+>>>>>>>>>>>>>>>>>>>>>  ######################  >>~ Memory Info -------------------------*
+>>>>>>>>>>>>>>>>>>>>>  ######################  ~ (Total: 48 GB) (Free: 26 GB) (Used: 45%)
+>>>>>>>>>>>>>>>>>>>>>  ######################  ~ Memory 0: (Used: 45%) 16GB DDR4 2133 MHz
+>>>>>>>>>>>>>>>>>>>>>  ######################  ~ Memory 1: (Used: 45%) 08GB DDR4 2133 MHz
+>>>>>>>>>>>>>>>>>>>>>  ######################  ~ Memory 2: (Used: 45%) 16GB DDR4 2133 MHz
+>>>>>>>>>>>>>>>>>>>>>  ######################  ~ Memory 3: (Used: 45%) 08GB DDR4 2133 MHz
+
+                                               ------------------------- STORAGE SUMMARY --------------------------
+                                               SSD Disk (C:) [ (Used)  233.60 GiB / 237.10 GiB    98% - NTFS  Int ]
+                                               HDD Disk (D:) [ (Used)  287.14 GiB / 465.76 GiB    61% - NTFS  Int ]
+                                               USB Disk (G:) [ (Used)  108.63 GiB / 112.64 GiB    96% - NTFS  Ext ]
+                                               HDD Disk (H:) [ (Used)  925.85 GiB / 931.50 GiB    99% - NTFS  Int ]
+                                               SSD Disk (I:) [ (Used)   79.28 GiB / 110.79 GiB    71% - NTFS  Int ]
+                                               HDD Disk (Y:) [ (Used)  307.79 GiB / 465.75 GiB    66% - NTFS  Int ]
+
+                                               -------------------- DISK PERFORMANCE & DETAILS --------------------
+                                               Disk (C:) [ Read: 1240.70 MB/s | Write:  770.78 MB/s | SN-1000 Int ]
+                                               Disk (D:) [ Read:   75.41 MB/s | Write:   66.31 MB/s | SN-1001 Int ]
+                                               Disk (G:) [ Read:  150.36 MB/s | Write:   64.16 MB/s | SN-1002 Ext ]
+                                               Disk (H:) [ Read:  124.15 MB/s | Write:  106.44 MB/s | SN-1003 Int ]
+                                               Disk (I:) [ Read:  515.14 MB/s | Write:  436.85 MB/s | SN-1004 Int ]
+                                               Disk (Y:) [ Read:  110.26 MB/s | Write:   84.49 MB/s | SN-1005 Int ]
