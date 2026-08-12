@@ -78,7 +78,7 @@
         </div>
 
         <!-- Animated terminal -->
-        <div class="hero-terminal" id="heroTerminal" aria-label="BinaryFetch terminal preview">
+        <div class="hero-terminal terminal" id="heroTerminal" aria-label="BinaryFetch terminal preview">
             <div class="titlebar">
                 <div class="titlebar-left">
                     <span class="win-icon"><i></i><i></i><i></i><i></i></span>
@@ -92,62 +92,32 @@
             </div>
 
             <div class="term-body" id="termBody">
-                <div class="prompt"><span class="path">PS C:\Users\dev</span><span class="arrow">&gt;</span>BinaryFetch</div>
-                <div class="banner">&gt;&gt;&gt; BinaryFetch</div>
+                <div class="prompt"><span class="path">PS C:\Users\dev</span><span class="arrow">&gt;</span>binaryfetch</div>
 
                 <div class="art-info">
                     <div class="ascii" id="ascii"></div>
 
                     <div class="info" id="infoRows">
-                        <div class="info-row k-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><span class="info-key">Time:</span><span class="info-val">(16:22:16) (Date: 11 : August : 2026) (Week: 32 - Tuesday)</span></div>
-                        <div class="info-row k-red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span class="info-key">OS:</span><span class="info-val">Windows 11 10.0 (Build 26200) (64-bit) (uptime: 2h 58m)</span></div>
-                        <div class="info-row k-amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="6" width="12" height="12" rx="1.5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg><span class="info-key">CPU:</span><span class="info-val">AMD Ryzen 5 5600G with Radeon Graphics (6C/12T) @ 3.89 GHz</span></div>
-                        <div class="info-row k-amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10v4M10 10v4M14 10v4M18 10v4"/></svg><span class="info-key">GPU:</span><span class="info-val">NVIDIA GeForce RTX 4070 SUPER (19%) (11.9941 GiB) (@1485 MHz)</span></div>
+                        <div class="info-row banner-row"><span>~&gt;&gt; BinaryFetch</span></div>
+                        <div class="info-row k-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><span class="info-key">Time:</span><span class="info-val">(16:59:05) (Date: 11 : August : 2026) (Week: 32 - Tuesday)</span></div>
+                        <div class="info-row k-red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span class="info-key">OS:</span><span class="info-val">Windows 11 10.0 (Build 26200) (64-bit) (uptime: 3h 35m)</span></div>
+                        <div class="info-row k-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="6" width="12" height="12" rx="1.5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg><span class="info-key">CPU:</span><span class="info-val">AMD Ryzen 5 5600G with Radeon Graphics (6C/12T) @ 3.89 GHz</span></div>
+                        <div class="info-row k-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10v4M10 10v4M14 10v4M18 10v4"/></svg><span class="info-key">GPU:</span><span class="info-val">NVIDIA GeForce RTX 4070 SUPER (28%) (11.9941 GB) (@660 MHz)</span></div>
                         <div class="info-row k-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="13" rx="1.5"/><path d="M8 21h8M12 17v4"/></svg><span class="info-key">Display 1:</span><span class="info-val">DELL S2240L (3840 x 2160) (Scale: 175%) (@60Hz)</span></div>
                         <div class="info-row k-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="13" rx="1.5"/><path d="M8 21h8M12 17v4"/></svg><span class="info-key">Display 2:</span><span class="info-val">HP M22f FHD (3840 x 2160) (Scale: 175%) (@60Hz)</span></div>
-                        <div class="info-row k-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="12" rx="2"/><path d="M2 20h20"/></svg><span class="info-key">Memory:</span><span class="info-val">(total: 47.2937 GB) (free: 28.8953 GB) (38%)</span></div>
-                        <div class="info-row k-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M9 22h6"/></svg><span class="info-key">Audio Input:</span><span class="info-val">Microphone (NVIDIA Broadcast) [Active]</span></div>
-                        <div class="info-row k-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3ZM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3Z"/></svg><span class="info-key">Audio Output:</span><span class="info-val">Headphones (MSI-906) [Active]</span></div>
-                        <div class="info-row k-amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="info-key">Performance:</span><span class="info-val">(CPU: 16%) (GPU: 19%) (RAM: 38%) (Disk: 98%)</span></div>
-                        <div class="info-row k-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span class="info-key">User:</span><span class="info-val">@coffee~ (Domain: MARUF) (Type: Admin)</span></div>
-                        <div class="info-row k-cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5a7 7 0 0 1 14 0M8.5 15.5a3.5 3.5 0 0 1 7 0M12 18.5v.01"/></svg><span class="info-key">Network:</span><span class="info-val">(Name: Bluetooth Device (Personal Area Network)) (Type: Ethernet) (ip: 192.168.137.1)</span></div>
-                        <div class="info-row k-amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg><span class="info-key">Disk Usage:</span><span class="info-val">(C: 98%) (D: 61%) (G: 96%) (H: 99%) (I: 71%) (Y: 66%)</span></div>
-                        <div class="info-row k-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14a8 3 0 0 0 16 0V5M4 12a8 3 0 0 0 16 0"/></svg><span class="info-key">Disk Cap:</span><span class="info-val">(C-237GB)(D-465GB)(G-112GB)(H-931GB)(I-110GB)(Y-465GB)</span></div>
+                        <div class="info-row k-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="12" rx="2"/><path d="M2 20h20"/></svg><span class="info-key">Memory:</span><span class="info-val">(total: 47.2937 GB) (free: 26.4722 GB) (44%)</span></div>
+                        <div class="info-row k-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M9 22h6"/></svg><span class="info-key">Audio Input:</span><span class="info-val">Microphone (Maono PD 100U) [Active]</span></div>
+                        <div class="info-row k-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3ZM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3Z"/></svg><span class="info-key">Audio Output:</span><span class="info-val">Headphones (MSL-906) [Active]</span></div>
+                        <div class="info-row k-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="info-key">Performance:</span><span class="info-val">(CPU: 23%) (GPU: 34%) (RAM: 44%) (Disk: 98%)</span></div>
+                        <div class="info-row k-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span class="info-key">User:</span><span class="info-val">@coffee~ (Domain: InterCentury) (Type: Admin)</span></div>
+                        <div class="info-row k-cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5a7 7 0 0 1 14 0M8.5 15.5a3.5 3.5 0 0 1 7 0M12 18.5v.01"/></svg><span class="info-key">Network:</span><span class="info-val">(Name: InterCentury) (Type: Ethernet) (ip: 192.168.137.1)</span></div>
+                        <div class="info-row k-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg><span class="info-key">Disk Usage:</span><span class="info-val">(C: 98%) (D: 61%) (G: 96%) (H: 99%) (I: 71%) (Y: 66%)</span></div>
                     </div>
                 </div>
 
-                <div class="section-head"><b>&nbsp;Memory Info</b></div>
-                <div id="memRows">
-                    <div class="mem-line"><span class="tilde">~</span>(Total: <b>48 GB</b>) (Free: <b>28 GB</b>) (Used: <span class="pct">41%</span>)</div>
-                    <div class="mem-line"><span class="tilde">~</span>Memory 0: (Used: <span class="pct">41%</span>) <b>16GB</b> DDR4 2133 MHz</div>
-                    <div class="mem-line"><span class="tilde">~</span>Memory 1: (Used: <span class="pct">41%</span>) <b>08GB</b> DDR4 2133 MHz</div>
-                    <div class="mem-line"><span class="tilde">~</span>Memory 2: (Used: <span class="pct">41%</span>) <b>16GB</b> DDR4 2133 MHz</div>
-                    <div class="mem-line"><span class="tilde">~</span>Memory 3: (Used: <span class="pct">41%</span>) <b>08GB</b> DDR4 2133 MHz</div>
-                </div>
-
-                <div class="dash-head"><b>STORAGE SUMMARY</b></div>
-                <div class="table-wrap">
-                    <div class="disk-grid" id="diskGrid">
-                        <div class="cell disk-name">SSD Disk (C:)</div><div class="cell">233.53 GiB / 237.10 GiB</div><div class="cell pct pct-high">98% used</div><div class="cell">NTFS</div><div class="cell">Int</div>
-                        <div class="cell disk-name">HDD Disk (D:)</div><div class="cell">287.14 GiB / 465.76 GiB</div><div class="cell pct pct-mid">61% used</div><div class="cell">NTFS</div><div class="cell">Int</div>
-                        <div class="cell disk-name">USB Disk (G:)</div><div class="cell">108.63 GiB / 112.64 GiB</div><div class="cell pct pct-high">96% used</div><div class="cell">NTFS</div><div class="cell">Ext</div>
-                        <div class="cell disk-name">HDD Disk (H:)</div><div class="cell">925.85 GiB / 931.50 GiB</div><div class="cell pct pct-high">99% used</div><div class="cell">NTFS</div><div class="cell">Int</div>
-                        <div class="cell disk-name">SSD Disk (I:)</div><div class="cell">79.28 GiB / 110.79 GiB</div><div class="cell pct pct-mid">71% used</div><div class="cell">NTFS</div><div class="cell">Int</div>
-                        <div class="cell disk-name">HDD Disk (Y:)</div><div class="cell">307.79 GiB / 465.75 GiB</div><div class="cell pct pct-mid">66% used</div><div class="cell">NTFS</div><div class="cell">Int</div>
-                    </div>
-                </div>
-
-                <div class="dash-head"><b>DISK PERFORMANCE &amp; DETAILS</b></div>
-                <div class="table-wrap">
-                    <div class="disk-grid" id="perfGrid" style="grid-template-columns:96px 150px 150px 90px;">
-                        <div class="cell disk-name">Disk (C:)</div><div class="cell">Read: 1239.69 MB/s</div><div class="cell">Write: 159.35 MB/s</div><div class="cell sn">SN-1000 · Int</div>
-                        <div class="cell disk-name">Disk (D:)</div><div class="cell">Read: 75.84 MB/s</div><div class="cell">Write: 68.17 MB/s</div><div class="cell sn">SN-1001 · Int</div>
-                        <div class="cell disk-name">Disk (G:)</div><div class="cell">Read: 150.61 MB/s</div><div class="cell">Write: 3.33 MB/s</div><div class="cell sn">SN-1002 · Ext</div>
-                        <div class="cell disk-name">Disk (H:)</div><div class="cell">Read: 123.08 MB/s</div><div class="cell">Write: 105.95 MB/s</div><div class="cell sn">SN-1003 · Int</div>
-                        <div class="cell disk-name">Disk (I:)</div><div class="cell">Read: 510.96 MB/s</div><div class="cell">Write: 400.09 MB/s</div><div class="cell sn">SN-1004 · Int</div>
-                        <div class="cell disk-name">Disk (Y:)</div><div class="cell">Read: 110.62 MB/s</div><div class="cell">Write: 84.31 MB/s</div><div class="cell sn">SN-1005 · Int</div>
-                    </div>
-                </div>
+                <div class="indent mono-block" id="memRows"></div>
+                <div class="indent mono-block" id="storageBody"></div>
+                <div class="indent mono-block" id="perfBody"></div>
 
                 <div class="cursor-line" id="cursorLine"><span class="path">PS C:\Users\dev</span><span class="arrow">&gt;</span><span class="caret"></span></div>
             </div>
