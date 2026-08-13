@@ -474,12 +474,59 @@ document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
     resetForTyping();
   }
 
+  /* =====================================================================
+     Intro splash: "BinaryFetch" arrives smoothly, holds, then the whole
+     splash fades/lifts away as the page underneath opens up. The terminal
+     boot cycle only starts once the page has fully revealed.
+  ===================================================================== */
+  const splash      = document.getElementById('splash');
+  const splashCmd    = document.getElementById('splashCmd');
+  const splashTyped  = document.getElementById('splashTyped');
+  const splashLogo   = document.getElementById('splashLogo');
+  const splashTag    = document.getElementById('splashTag');
+  const page          = document.getElementById('page');
+
+  async function runIntro(){
+    document.body.classList.add('locked');
+
+    // 1. small terminal prompt types the brand's own command
+    await sleep(300);
+    await typeText(splashTyped, 'binaryfetch', 45, 70);
+    await sleep(280);
+
+    // 2. prompt steps aside, the wordmark arrives smoothly
+    if (splashCmd) splashCmd.classList.add('hide');
+    await sleep(150);
+    if (splashLogo) splashLogo.classList.add('show');
+    await sleep(350);
+    if (splashTag) splashTag.classList.add('show');
+
+    // 3. hold on the brand moment
+    await sleep(900);
+
+    // 4. background fades out and lifts away, page opens up underneath
+    if (splash) splash.classList.add('leaving');
+    await sleep(90);
+    if (page) page.classList.add('revealed');
+
+    await sleep(950);
+    if (splash) splash.style.display = 'none';
+    document.body.classList.remove('locked');
+
+    // 5. once the page has fully opened, the terminal preview boots itself
+    await sleep(250);
+    runCycle();
+  }
+
   window.addEventListener('load', () => {
     measureFullHeight();
     if (prefersReduced) {
       renderStatic();
+      if (splash) splash.style.display = 'none';
+      if (page) page.classList.add('revealed');
+      document.body.classList.remove('locked');
     } else {
-      setTimeout(runCycle, 550);
+      runIntro();
     }
   });
   if (document.fonts && document.fonts.ready) {

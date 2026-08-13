@@ -16,7 +16,25 @@
 
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="locked">
+
+<!-- ================================================================
+     INTRO SPLASH ANIMATION
+================================================================ -->
+<div id="splash">
+  <div class="splash-inner">
+    <div class="splash-cmd" id="splashCmd">
+      <span class="path">PS C:\Users\dev</span><span class="arrow">&gt;</span><span id="splashTyped"></span><span class="scaret"></span>
+    </div>
+    <div class="splash-logo" id="splashLogo">
+      <span class="mark">&gt;_</span>
+      <h1>BinaryFetch</h1>
+    </div>
+    <p class="splash-tag" id="splashTag">system info, instantly</p>
+  </div>
+</div>
+
+<div class="page" id="page">
 
 <!-- Animated orb background -->
 <div class="bg-mesh" aria-hidden="true">
@@ -687,6 +705,7 @@
     </div>
 </footer>
 
+</div><!-- /.page -->
 
 <script src="js/main.js" defer></script>
 </body>
