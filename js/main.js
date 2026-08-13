@@ -359,26 +359,48 @@ document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
   const card = document.getElementById('tiltCard');
   if (!wrap || !card) return;
 
-  const MAX_ROTATE = 10;
+  const MAX_ROTATE = 6; // Reduced to 75% (was 8deg)
+  let rafId = null;
+  let targetRotX = 0;
+  let targetRotY = 0;
+  let currentRotX = 0;
+  let currentRotY = 0;
+
+  function updateTilt() {
+    currentRotX += (targetRotX - currentRotX) * 0.12;
+    currentRotY += (targetRotY - currentRotY) * 0.12;
+
+    card.style.transform = `perspective(1200px) rotateX(${currentRotX.toFixed(2)}deg) rotateY(${currentRotY.toFixed(2)}deg) scale3d(1.015, 1.015, 1.015)`;
+
+    if (Math.abs(targetRotX - currentRotX) > 0.01 || Math.abs(targetRotY - currentRotY) > 0.01) {
+      rafId = requestAnimationFrame(updateTilt);
+    } else {
+      rafId = null;
+    }
+  }
 
   wrap.addEventListener('mousemove', (e) => {
     const rect = card.getBoundingClientRect();
     const mx = (e.clientX - rect.left) / rect.width;
     const my = (e.clientY - rect.top)  / rect.height;
 
-    const rotX =  (0.5 - my) * MAX_ROTATE;
-    const rotY = -(0.5 - mx) * MAX_ROTATE;
+    targetRotX =  (0.5 - my) * MAX_ROTATE;
+    targetRotY = -(0.5 - mx) * MAX_ROTATE;
 
-    card.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(1.03,1.03,1.03)`;
-    card.style.transition = 'none';
-    card.style.setProperty('--mx', `${mx * 100}%`);
-    card.style.setProperty('--my', `${my * 100}%`);
+    card.style.setProperty('--mx', `${(mx * 100).toFixed(1)}%`);
+    card.style.setProperty('--my', `${(my * 100).toFixed(1)}%`);
+
+    if (!rafId) {
+      rafId = requestAnimationFrame(updateTilt);
+    }
   });
 
   wrap.addEventListener('mouseleave', () => {
-    card.style.transition = 'transform 0.7s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s';
-    card.style.transform  = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)';
-    setTimeout(() => { card.style.transition = ''; }, 700);
+    targetRotX = 0;
+    targetRotY = 0;
+    card.style.transition = 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease';
+    card.style.transform  = 'perspective(1200px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+    setTimeout(() => { card.style.transition = ''; }, 600);
   });
 })();
 

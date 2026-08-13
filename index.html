@@ -154,42 +154,50 @@
 ================================================================ -->
 <section class="section showcase" id="preview">
     <div class="container">
-        <div class="showcase-grid">
-
-            <!-- 3D tilt card -->
-            <div class="tilt-wrap reveal" id="tiltWrap">
+        <!-- Main focused 3D tilt preview card -->
+        <div class="showcase-preview-hero reveal">
+            <div class="tilt-wrap" id="tiltWrap">
                 <div class="tilt-card" id="tiltCard">
-                    <img src="https://raw.githubusercontent.com/BinaryFetch-CLI/BinaryFetch/984ddde6b5d583c74f146ba0a71fb131a9e91e29/Previews/00_main.png"
-                         alt="BinaryFetch main preview"
-                         loading="lazy">
+                    <div class="tilt-card-inner">
+                        <img src="Previews/preview.jpg"
+                             alt="BinaryFetch Solune Preview"
+                             loading="lazy">
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Content -->
-            <div class="showcase-content reveal" style="transition-delay:0.15s">
+        <!-- Information details below the preview image -->
+        <div class="showcase-info-bottom reveal" style="transition-delay:0.15s">
+            <div class="showcase-header">
                 <div class="section-tag">Live Preview</div>
                 <h2 class="section-title">
                     Built for Windows.<br>
                     <span class="grad">Built to last.</span>
                 </h2>
-                <p>BinaryFetch displays your full system snapshot in the terminal — CPU, GPU, RAM, Disk, Network, Audio, Battery, and more — all in one beautifully formatted, color-coded output.</p>
-                <p>Every element is individually toggle-able and color-configurable through a single JSON file. No restart, no recompile.</p>
+                <p class="showcase-desc">BinaryFetch displays your full system snapshot in the terminal — CPU, GPU, RAM, Disk, Network, Audio, Battery, and more — all in one beautifully formatted, color-coded output.</p>
+                <p class="showcase-subdesc">Every element is individually toggle-able and color-configurable through a single JSON file. No restart, no recompile.</p>
+            </div>
 
+            <div class="showcase-features-grid">
                 <ul class="check-list">
                     <li><span class="icon">✓</span>Compact &amp; Expanded display modes</li>
                     <li><span class="icon">✓</span>Multi-GPU &amp; multi-monitor detection</li>
                     <li><span class="icon">✓</span>14+ ANSI color codes per module</li>
+                </ul>
+                <ul class="check-list">
                     <li><span class="icon">✓</span>Predictive disk read/write performance</li>
                     <li><span class="icon">✓</span>Zero network calls — fully offline</li>
                     <li><span class="icon">✓</span>Self-healing: missing files auto-recreated</li>
                 </ul>
+            </div>
 
+            <div class="showcase-cta">
                 <a href="#install" class="btn btn-primary" id="installLinkBtn">
                     <span>🚀</span>
                     <span>Get Started</span>
                 </a>
             </div>
-
         </div>
     </div>
 </section>
