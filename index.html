@@ -228,42 +228,61 @@
 <!-- ================================================================
      WHY BINARYFETCH
 ================================================================ -->
-<section class="section" id="features">
-    <div class="container">
-        <div class="section-header reveal">
-            <div class="section-tag">Why BinaryFetch</div>
-            <h2 class="section-title">Engineering that <span class="grad">never breaks.</span></h2>
-            <p class="section-desc">Every architectural decision is made with reliability first — so you can customize freely without fear.</p>
+<section class="section why-section" id="features">
+    <div class="container" style="position:relative;">
+        <div class="why-glow" aria-hidden="true"></div>
+
+        <div class="reveal">
+            <span class="why-eyebrow"><span class="dot"></span>WHY BINARYFETCH</span>
+            <h2 class="why-title"><span class="dim">Key features of</span> <span class="brand">BinaryFetch</span></h2>
+            <p class="why-lede">Every architectural decision is made with reliability first — so you can customize freely without fear.</p>
         </div>
 
         <div class="why-grid">
-            <div class="why-card reveal" style="transition-delay:0.05s">
-                <div class="why-icon">🛡️</div>
+            <div class="why-card c-sky reveal" style="transition-delay:0.05s">
+                <div class="icon-chip">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v5c0 4.6 3 8.2 7 10 4-1.8 7-5.4 7-10V6l-7-3Z"/><path d="M9.5 12l2 2 3.5-3.5"/></svg>
+                </div>
                 <h3>Self-Healing Engine</h3>
-                <p>Deleted <code style="color:var(--cyan);font-family:var(--mono)">BinaryArt.txt</code>? Config missing? BinaryFetch auto-recreates everything from bundled defaults. The program <strong>never crashes</strong> due to missing user files.</p>
+                <p>Deleted <code>BinaryArt.txt</code>? Config missing? BinaryFetch auto-recreates everything from bundled defaults. The program <b>never crashes</b> due to missing user files.</p>
             </div>
-            <div class="why-card reveal" style="transition-delay:0.1s">
-                <div class="why-icon">🧩</div>
+
+            <div class="why-card c-green reveal" style="transition-delay:0.1s">
+                <div class="icon-chip">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a2 2 0 0 1 2-2h3a2 2 0 0 0 2-2 2 2 0 1 1 2 2 2 2 0 0 0 2 2h3a2 2 0 0 1 2 2v3a2 2 0 0 0-2 2 2 2 0 1 0 2 2v3a2 2 0 0 1-2 2h-3a2 2 0 0 1-2-2 2 2 0 1 0-2 2H6a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2 2 2 0 1 0-2-2Z"/></svg>
+                </div>
                 <h3>Module-Per-Domain</h3>
                 <p>34 independent classes, 158 functions, zero coupling. Each system category is its own sealed module — no orchestration spaghetti, no hidden dependencies.</p>
             </div>
-            <div class="why-card reveal" style="transition-delay:0.15s">
-                <div class="why-icon">🎨</div>
+
+            <div class="why-card c-gold reveal" style="transition-delay:0.15s">
+                <div class="icon-chip">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="8.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="9" cy="13" r="1.4" fill="currentColor" stroke="none"/><path d="M12 21a2 2 0 0 1-2-2c0-.6.3-1 .6-1.4.3-.4.5-.7.5-1.1a1.5 1.5 0 0 0-1.5-1.5H9a4 4 0 1 1 0-8"/></svg>
+                </div>
                 <h3>Extreme Customization</h3>
                 <p>300+ individual JSON settings. Toggle any module, set per-character ANSI colors in your ASCII art, choose compact or detailed view — all without touching a line of C++.</p>
             </div>
-            <div class="why-card reveal" style="transition-delay:0.2s">
-                <div class="why-icon">⚡</div>
+
+            <div class="why-card c-orange reveal" style="transition-delay:0.2s">
+                <div class="icon-chip">
+                    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg>
+                </div>
                 <h3>Always First-Run Ready</h3>
                 <p>No setup wizard, no installer prompts. Extract and run. BinaryFetch bootstraps itself completely on first launch, with sensible defaults already in place.</p>
             </div>
-            <div class="why-card reveal" style="transition-delay:0.25s">
-                <div class="why-icon">🖥️</div>
+
+            <div class="why-card c-sky reveal" style="transition-delay:0.25s">
+                <div class="icon-chip">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/><path d="M7 9l2.5 2.5L7 14M12.5 14h4"/></svg>
+                </div>
                 <h3>Deep Hardware Visibility</h3>
                 <p>Reads CPU/GPU/RAM/Disk/Network/Audio/Battery. Detects all connected monitors, all GPUs simultaneously. Even predicts disk read/write speeds before the OS reports them.</p>
             </div>
-            <div class="why-card reveal" style="transition-delay:0.3s">
-                <div class="why-icon">🌐</div>
+
+            <div class="why-card c-green reveal" style="transition-delay:0.3s">
+                <div class="icon-chip">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18Z"/></svg>
+                </div>
                 <h3>Community Shareable</h3>
                 <p>Your config is just two files — JSON + ASCII art. Zip them up and share your exact setup with anyone in the community. No databases, no profiles, no accounts.</p>
             </div>
