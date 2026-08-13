@@ -631,7 +631,7 @@ document.querySelectorAll('.faq-trigger').forEach(trigger => {
 /* ──────────────────────────────────────────────────────────
    10. RIPPLE EFFECT ON BUTTONS
 ────────────────────────────────────────────────────────── */
-document.querySelectorAll('.btn, .download-big').forEach(btn => {
+document.querySelectorAll('.btn, .download-big, .nav-cta').forEach(btn => {
   btn.addEventListener('click', e => {
     const rect   = btn.getBoundingClientRect();
     const size   = Math.max(rect.width, rect.height);
