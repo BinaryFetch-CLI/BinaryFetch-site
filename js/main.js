@@ -152,11 +152,22 @@ document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
    6. HERO TERMINAL DYNAMIC RENDERER
 ────────────────────────────────────────────────────────── */
 (function () {
-  const ascii = document.getElementById('ascii');
-  if (!ascii) return;
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const sleep = ms => new Promise(r => setTimeout(r, prefersReduced ? 0 : ms));
 
-  const N = 16;
-  const HALF = 8;
+  const asciiEl      = document.getElementById('ascii');
+  const artInfo       = document.getElementById('artInfo');
+  const infoRowsEl    = document.getElementById('infoRows');
+  const typedCmd      = document.getElementById('typedCmd');
+  const cmdCaret      = document.getElementById('cmdCaret');
+  const idlePrompt    = document.getElementById('idlePrompt');
+  const typedClear    = document.getElementById('typedClear');
+  const termBody      = document.getElementById('termBody');
+
+  if (!asciiEl || !artInfo || !infoRowsEl || !termBody) return;
+
+  // ---------- ascii block art ----------
+  const N = 16, HALF = 8;
   let asciiHtml = '';
   for(let r=0;r<HALF;r++){
     asciiHtml += `<span class="row"><span class="a">${'#'.repeat(N)}</span> <span class="b">${'<'.repeat(N)}</span></span>`;
@@ -164,7 +175,7 @@ document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
   for(let r=0;r<HALF;r++){
     asciiHtml += `<span class="row"><span class="b">${'>'.repeat(N)}</span> <span class="a">${'#'.repeat(N)}</span></span>`;
   }
-  ascii.innerHTML = asciiHtml;
+  asciiEl.innerHTML = asciiHtml;
 
   // ---------- data ----------
   const memData = {
@@ -260,17 +271,6 @@ document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
     };
   }
 
-  function renderBlock(containerId, rows, startDelay, step){
-    const container = document.getElementById(containerId);
-    if (!container) return startDelay;
-    container.innerHTML = rows.map((row, i) => {
-      const delay = (startDelay + i * step).toFixed(3);
-      const cls = row.isHead ? 'mono-row head-row' : 'mono-row';
-      return `<div class="${cls}" style="animation-delay:${delay}s">${row.html}</div>`;
-    }).join('');
-    return startDelay + rows.length * step + 0.1;
-  }
-
   const memContentRows = buildMemRows();
   const memWidth = Math.max(...memContentRows.map(r => r.plain.length));
   const memHeader = buildLeftHeader('Memory Info', memWidth);
@@ -289,34 +289,20 @@ document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
   perfHeader.isHead = true;
   const perfRowsFinal = [perfHeader, ...perfContentRows];
 
-  let t = 0.35;
-  document.querySelectorAll('.info-row').forEach((row, i) => { row.style.animationDelay = (t + i * 0.05) + 's'; });
-  t += document.querySelectorAll('.info-row').length * 0.05 + 0.2;
-
-  t = renderBlock('memRows', memRowsFinal, t, 0.05) + 0.1;
-  t = renderBlock('storageBody', storageRowsFinal, t, 0.05) + 0.1;
-  t = renderBlock('perfBody', perfRowsFinal, t, 0.05);
-
-  const cursorLine = document.getElementById('cursorLine');
-  if (cursorLine) cursorLine.style.animationDelay = t + 's';
-
-  function alignColumns(){
-    const info = document.getElementById('infoRows');
-    const term = document.getElementById('termBody');
-    if (!info || !term) return;
-    if (window.innerWidth <= 760) {
-      ['memRows','storageBody','perfBody'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.paddingLeft = '0px';
-      });
-      return;
-    }
-    const icon = info.querySelector('.info-row svg') || info.querySelector('.info-row');
+  let iconOffsetPx = 0;
+  function computeIconOffset(){
+    if (window.innerWidth <= 760) { iconOffsetPx = 0; return; }
+    const icon = infoRowsEl.querySelector('.info-row svg');
     if (!icon) return;
-    const offset = Math.round(icon.getBoundingClientRect().left - term.getBoundingClientRect().left);
+    const r1 = icon.getBoundingClientRect();
+    const r2 = termBody.getBoundingClientRect();
+    if (r1.width === 0 && r1.height === 0) return;
+    iconOffsetPx = Math.round(r1.left - r2.left);
+  }
+  function applyOffset(){
     ['memRows','storageBody','perfBody'].forEach(id => {
       const el = document.getElementById(id);
-      if (el) el.style.paddingLeft = offset + 'px';
+      if (el) el.style.paddingLeft = iconOffsetPx + 'px';
     });
   }
 
@@ -332,22 +318,175 @@ document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
       el.style.fontSize = fitted + 'px';
     }
   }
-
   function fitAllMonoBlocks(){
     ['memRows','storageBody','perfBody'].forEach(fitMonoBlock);
   }
 
-  function refreshLayout(){
-    alignColumns();
-    fitAllMonoBlocks();
+  let isFullState = false;
+  function lockHeight(){
+    termBody.style.minHeight = '0px';
+    void termBody.offsetHeight;
+    const h = termBody.scrollHeight;
+    termBody.style.minHeight = h + 'px';
   }
 
-  refreshLayout();
-  window.addEventListener('resize', refreshLayout);
+  window.addEventListener('resize', () => {
+    if (artInfo.style.display !== 'none') { computeIconOffset(); applyOffset(); }
+    fitAllMonoBlocks();
+    if (isFullState) lockHeight();
+  });
   if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(refreshLayout);
+    document.fonts.ready.then(() => {
+      if (artInfo.style.display !== 'none') { computeIconOffset(); applyOffset(); fitAllMonoBlocks(); }
+      if (isFullState) lockHeight();
+    });
   }
-  window.addEventListener('load', refreshLayout);
+
+  async function typeText(el, text, min = 40, max = 85){
+    el.textContent = '';
+    for (const ch of text){
+      el.textContent += ch;
+      await sleep(min + Math.random() * (max - min));
+    }
+  }
+
+  async function revealBlock(containerId, rowsData, step = 45){
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    el.innerHTML = rowsData.map(row => {
+      const cls = row.isHead ? 'mono-row head-row' : 'mono-row';
+      return `<div class="${cls}">${row.html}</div>`;
+    }).join('');
+    fitMonoBlock(containerId);
+    const rowEls = Array.from(el.children);
+    for (const r of rowEls){
+      r.classList.add('show');
+      await sleep(step);
+    }
+  }
+
+  function resetForTyping(){
+    isFullState = false;
+    typedCmd.textContent = '';
+    cmdCaret.style.display = '';
+    artInfo.style.display = 'none';
+    asciiEl.classList.remove('show');
+    infoRowsEl.querySelectorAll('.info-row').forEach(r => r.classList.remove('show'));
+    ['memRows','storageBody','perfBody'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = '';
+    });
+    if (idlePrompt) idlePrompt.style.display = 'none';
+    if (typedClear) typedClear.textContent = '';
+  }
+
+  async function runCycle(){
+    resetForTyping();
+
+    await typeText(typedCmd, 'binaryfetch');
+    cmdCaret.style.display = 'none';
+    await sleep(250);
+
+    artInfo.style.display = 'flex';
+    computeIconOffset();
+    applyOffset();
+    asciiEl.classList.add('show');
+    const infoRowEls = Array.from(infoRowsEl.querySelectorAll('.info-row'));
+    for (const row of infoRowEls){
+      row.classList.add('show');
+      await sleep(50);
+    }
+    await sleep(150);
+
+    await revealBlock('memRows', memRowsFinal);
+    await sleep(100);
+    await revealBlock('storageBody', storageRowsFinal);
+    await sleep(100);
+    await revealBlock('perfBody', perfRowsFinal);
+
+    await sleep(300);
+    if (idlePrompt) idlePrompt.style.display = 'flex';
+    isFullState = true;
+    lockHeight();
+
+    await sleep(7000);
+
+    if (typedClear) {
+      await typeText(typedClear, 'clear');
+      await sleep(450);
+    }
+
+    runCycle();
+  }
+
+  function renderStatic(){
+    typedCmd.textContent = 'binaryfetch';
+    cmdCaret.style.display = 'none';
+    artInfo.style.display = 'flex';
+    computeIconOffset();
+    applyOffset();
+    asciiEl.classList.add('show');
+    infoRowsEl.querySelectorAll('.info-row').forEach(r => r.classList.add('show'));
+
+    const fill = (id, rows) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.innerHTML = rows.map(row => {
+        const cls = row.isHead ? 'mono-row head-row show' : 'mono-row show';
+        return `<div class="${cls}">${row.html}</div>`;
+      }).join('');
+      fitMonoBlock(id);
+    };
+    fill('memRows', memRowsFinal);
+    fill('storageBody', storageRowsFinal);
+    fill('perfBody', perfRowsFinal);
+
+    if (idlePrompt) idlePrompt.style.display = 'flex';
+    isFullState = true;
+    lockHeight();
+  }
+
+  function measureFullHeight(){
+    typedCmd.textContent = 'binaryfetch';
+    artInfo.style.display = 'flex';
+    computeIconOffset();
+    applyOffset();
+
+    const fill = (id, rows) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.innerHTML = rows.map(row => {
+        const cls = row.isHead ? 'mono-row head-row' : 'mono-row';
+        return `<div class="${cls}">${row.html}</div>`;
+      }).join('');
+      fitMonoBlock(id);
+    };
+    fill('memRows', memRowsFinal);
+    fill('storageBody', storageRowsFinal);
+    fill('perfBody', perfRowsFinal);
+
+    if (idlePrompt) idlePrompt.style.display = 'flex';
+
+    termBody.style.minHeight = '0px';
+    void termBody.offsetHeight;
+    termBody.style.minHeight = termBody.scrollHeight + 'px';
+
+    resetForTyping();
+  }
+
+  window.addEventListener('load', () => {
+    measureFullHeight();
+    if (prefersReduced) {
+      renderStatic();
+    } else {
+      setTimeout(runCycle, 550);
+    }
+  });
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => {
+      if (artInfo.style.display === 'none') measureFullHeight();
+    });
+  }
 })();
 
 

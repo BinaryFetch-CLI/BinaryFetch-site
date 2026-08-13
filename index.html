@@ -82,7 +82,7 @@
             <div class="titlebar">
                 <div class="titlebar-left">
                     <span class="win-icon"><i></i><i></i><i></i><i></i></span>
-                    BinaryFetch — Windows PowerShell
+                    <span>BinaryFetch — Windows PowerShell</span>
                 </div>
                 <div class="win-btns">
                     <button aria-label="Minimize"><svg viewBox="0 0 10 10"><rect x="0" y="4.5" width="10" height="1" fill="currentColor"/></svg></button>
@@ -92,9 +92,12 @@
             </div>
 
             <div class="term-body" id="termBody">
-                <div class="prompt"><span class="path">PS C:\Users\dev</span><span class="arrow">&gt;</span>binaryfetch</div>
 
-                <div class="art-info">
+                <div class="prompt" id="cmdLine">
+                    <span class="path">PS C:\Users\dev</span><span class="arrow">&gt;</span><span id="typedCmd"></span><span class="caret" id="cmdCaret"></span>
+                </div>
+
+                <div class="art-info" id="artInfo">
                     <div class="ascii" id="ascii"></div>
 
                     <div class="info" id="infoRows">
@@ -119,7 +122,9 @@
                 <div class="indent mono-block" id="storageBody"></div>
                 <div class="indent mono-block" id="perfBody"></div>
 
-                <div class="cursor-line" id="cursorLine"><span class="path">PS C:\Users\dev</span><span class="arrow">&gt;</span><span class="caret"></span></div>
+                <div class="prompt" id="idlePrompt">
+                    <span class="path">PS C:\Users\dev</span><span class="arrow">&gt;</span><span id="typedClear"></span><span class="caret" id="idleCaret"></span>
+                </div>
             </div>
         </div>
     </div>

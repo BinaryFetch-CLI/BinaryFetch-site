@@ -361,9 +361,16 @@ margin-bottom: 4.5rem;
     text-align: left;
 }
 
-.prompt { color: var(--muted); margin-bottom: 1px; }
+.prompt { color: var(--muted); margin-bottom: 1px; display: flex; flex-wrap: wrap; align-items: baseline; }
 .prompt .path { color: var(--cyan); }
 .prompt .arrow { color: var(--muted-2); margin: 0 2px; }
+#idlePrompt { margin-top: 14px; margin-bottom: 0; }
+
+.caret {
+    width: 7px; height: 14px; background: var(--cyan); display: inline-block;
+    margin-left: 2px; animation: blink 1s step-end infinite; flex-shrink: 0;
+}
+@keyframes blink { 50% { opacity: 0; } }
 
 .art-info {
     display: flex;
@@ -378,8 +385,9 @@ margin-bottom: 4.5rem;
     letter-spacing: 1px;
     white-space: pre;
     opacity: 0;
-    animation: fadeIn .5s ease .2s forwards;
+    transition: opacity .5s ease;
 }
+.ascii.show { opacity: 1; }
 .ascii .row { display: block; }
 .ascii .a { color: var(--red); }
 .ascii .b { color: #4b5160; }
@@ -392,8 +400,9 @@ margin-bottom: 4.5rem;
     white-space: nowrap;
     opacity: 0;
     transform: translateX(-6px);
-    animation: slideIn .4s cubic-bezier(.16,1,.3,1) forwards;
+    transition: opacity .35s cubic-bezier(.16,1,.3,1), transform .35s cubic-bezier(.16,1,.3,1);
 }
+.info-row.show { opacity: 1; transform: translateX(0); }
 .info-row.banner-row { color: var(--cyan); font-weight: 700; margin-bottom: 2px; }
 .info-row svg { width: 12.5px; height: 12.5px; flex-shrink: 0; position: relative; top: 1px; }
 .info-key { font-weight: 600; }
@@ -405,17 +414,15 @@ margin-bottom: 4.5rem;
 .k-purple { color: var(--purple); } .k-purple svg { color: var(--purple); }
 .k-cyan { color: var(--cyan); } .k-cyan svg { color: var(--cyan); }
 
-@keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
-@keyframes fadeIn { to { opacity: 1; } }
-
 /* Monospace aligned rows (memory / storage / performance) */
 .mono-block { overflow-x: hidden; margin-top: 16px; }
 .mono-row {
     font-family: var(--mono); font-size: inherit; line-height: 1.5;
     color: var(--muted); white-space: pre;
     opacity: 0; transform: translateX(-6px);
-    animation: slideIn .4s cubic-bezier(.16,1,.3,1) forwards;
+    transition: opacity .35s cubic-bezier(.16,1,.3,1), transform .35s cubic-bezier(.16,1,.3,1);
 }
+.mono-row.show { opacity: 1; transform: translateX(0); }
 .mono-row .tilde { color: var(--muted-2); margin-right: 6px; }
 .mono-row b { color: var(--fg-dim); font-weight: 500; }
 .mono-row .pct { color: var(--orange); font-weight: 600; }
