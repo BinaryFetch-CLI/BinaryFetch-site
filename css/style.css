@@ -1088,20 +1088,70 @@ font-size: 0.8rem;
 .custom-info p  { color: var(--text-2); line-height: 1.75; margin-bottom: 1.5rem; font-size: 0.97rem; }
 
 .file-pill {
-display: flex;
-align-items: center;
-gap: 0.8rem;
-padding: 1rem 1.2rem;
-background: var(--bg-card);
-border: 1px solid var(--border);
-border-radius: var(--r-md);
-margin-bottom: 0.8rem;
-transition: border-color 0.3s, transform 0.4s var(--spring);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem 1.2rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  margin-bottom: 0.8rem;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, box-shadow;
 }
-.file-pill:hover { border-color: var(--border-c); transform: translateX(6px); }
-.file-pill-icon { font-size: 1.3rem; }
-.file-pill-name { font-family: var(--mono); font-size: 0.88rem; color: var(--cyan); font-weight: 600; }
-.file-pill-desc { font-size: 0.8rem; color: var(--text-3); }
+
+.file-pill::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.08), rgba(0, 255, 136, 0.04));
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.file-pill:hover {
+  border-color: var(--border-c);
+  transform: translateX(8px) scale(1.015);
+  box-shadow: 0 10px 30px rgba(0, 212, 255, 0.12), 0 0 15px rgba(0, 212, 255, 0.06);
+}
+
+.file-pill:hover::before {
+  opacity: 1;
+}
+
+.file-pill-icon {
+  font-size: 1.3rem;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.file-pill:hover .file-pill-icon {
+  transform: scale(1.2) rotate(6deg);
+}
+
+.file-pill-name {
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  color: var(--cyan);
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.file-pill:hover .file-pill-name {
+  color: #ffffff;
+}
+
+.file-pill-desc {
+  font-size: 0.8rem;
+  color: var(--text-3);
+  transition: color 0.3s ease;
+}
+
+.file-pill:hover .file-pill-desc {
+  color: var(--text-2);
+}
 
 /* ============================================================
    MODULES GRID
