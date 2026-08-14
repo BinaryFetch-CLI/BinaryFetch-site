@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BinaryFetch — your machine, fetched instantly</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0d12;
+    --panel:#0d1117;
+    --panel-border:#212734;
+    --border:#1b202b;
+    --fg:#e9ebf0;
+    --fg-dim:#c9cddb;
+    --muted:#7d8494;
+    --muted-2:#565d6b;
+    --cyan:#5eead4;
+    --purple:#a78bfa;
+    --blue:#60a5fa;
+    --green:#3ecf8e;
+    --orange:#f2924b;
+    --red:#f2726b;
+    --mono:'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --ease-out-expo: cubic-bezier(.16,1,.3,1);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{-webkit-font-smoothing:antialiased; scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:var(--sans);
+    min-height:100vh;
+    position:relative;
+    overflow-x:hidden;
+  }
+  body.locked{ overflow:hidden; height:100vh; }
+
+  /* ================= intro splash ================= */
+  #splash{
+    position:fixed; inset:0; z-index:100;
+    background:var(--bg);
+    display:flex; align-items:center; justify-content:center;
+    transition: opacity 1.05s var(--ease-out-expo), transform 1.05s var(--ease-out-expo), filter 1.05s var(--ease-out-expo);
+    will-change:opacity, transform, filter;
+  }
+  #splash::before{
+    content:''; position:absolute; inset:0;
+    background-image:radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size:26px 26px;
+    opacity:.6;
+  }
+  #splash::after{
+    content:''; position:absolute; top:50%; left:50%;
+    width:900px; height:560px; transform:translate(-50%,-50%);
+    background:
+      radial-gradient(circle at 35% 35%, rgba(94,234,212,0.14), transparent 55%),
+      radial-gradient(circle at 65% 55%, rgba(96,165,250,0.10), transparent 55%);
+    filter:blur(10px);
+  }
+  #splash.leaving{
+    opacity:0;
+    transform:translateY(-4%) scale(1.045);
+    filter:blur(14px);
+    pointer-events:none;
+  }
+  .splash-inner{ position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; }
+
+  .splash-cmd{
+    font-family:var(--mono); font-size:14px; color:var(--muted);
+    display:flex; align-items:baseline; gap:2px; margin-bottom:34px;
+    transition:opacity .4s var(--ease-out-expo), transform .4s var(--ease-out-expo);
+  }
+  .splash-cmd .path{ color:var(--cyan); }
+  .splash-cmd .arrow{ color:var(--muted-2); margin:0 6px 0 2px; }
+  .splash-cmd .scaret{
+    width:7px; height:15px; background:var(--cyan); display:inline-block; margin-left:2px;
+    animation:blink 1s step-end infinite;
+  }
+  .splash-cmd.hide{ opacity:0; transform:translateY(-10px); }
+
+  .splash-logo{
+    display:flex; align-items:center; gap:16px;
+    opacity:0; transform:translateY(22px) scale(.92); filter:blur(10px);
+    transition:opacity .95s var(--ease-out-expo), transform .95s var(--ease-out-expo), filter .95s var(--ease-out-expo);
+  }
+  .splash-logo.show{ opacity:1; transform:translateY(0) scale(1); filter:blur(0); }
+  .splash-logo .mark{
+    width:52px; height:52px; border-radius:14px;
+    background:linear-gradient(135deg, var(--cyan), var(--blue));
+    display:grid; place-items:center;
+    font-family:var(--mono); font-weight:800; font-size:24px; color:#04120f;
+    box-shadow:0 20px 40px -14px rgba(94,234,212,0.4);
+  }
+  .splash-logo h1{
+    font-family:var(--sans); font-weight:800; letter-spacing:-.03em;
+    font-size:clamp(38px, 6vw, 58px); color:var(--fg);
+  }
+
+  .splash-tag{
+    margin-top:18px; font-family:var(--mono); font-size:13px; color:var(--muted-2);
+    letter-spacing:.04em;
+    opacity:0; transform:translateY(10px);
+    transition:opacity .7s var(--ease-out-expo), transform .7s var(--ease-out-expo);
+  }
+  .splash-tag.show{ opacity:1; transform:translateY(0); }
+
+  /* ================= page reveal (single unified motion) ================= */
+  .page{
+    opacity:0;
+    transform:scale(1.015);
+    filter:blur(8px);
+    transition:opacity 1.1s var(--ease-out-expo), transform 1.1s var(--ease-out-expo), filter 1.1s var(--ease-out-expo);
+    will-change:opacity, transform, filter;
+  }
+  .page.revealed{ opacity:1; transform:scale(1); filter:blur(0); }
+
+  @media (prefers-reduced-motion: reduce){
+    #splash{ display:none; }
+    .page{ opacity:1; transform:none; filter:none; }
+  }
+
+  /* ---------- ambient background ---------- */
+  .bg-fx{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size:26px 26px;
+  }
+
+  .bg-glow{
+    position:fixed; top:-20%; left:50%;
+    width:1200px; height:760px;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(167,139,250,0.16), transparent 55%),
+      radial-gradient(circle at 70% 40%, rgba(94,234,212,0.13), transparent 55%),
+      radial-gradient(circle at 50% 75%, rgba(96,165,250,0.10), transparent 55%);
+    filter:blur(10px); z-index:0; pointer-events:none;
+    transform:translate(-50%, 0%) scale(1);
+    will-change:transform;
+  }
+
+  /* ---------- nav ---------- */
+  .nav{
+    position:sticky; top:0; z-index:20;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 32px;
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    background:rgba(10,13,18,0.55);
+    border-bottom:1px solid var(--border);
+  }
+
+  .nav-logo{
+    display:flex; align-items:center; gap:9px;
+    font-family:var(--mono); font-weight:700; font-size:15px; letter-spacing:-.01em;
+    color:var(--fg); text-decoration:none;
+  }
+  .nav-logo .mark{
+    width:20px; height:20px; border-radius:5px;
+    background:linear-gradient(135deg, var(--cyan), var(--blue));
+    display:grid; place-items:center;
+    font-size:11px; font-weight:800; color:#04120f;
+  }
+  .nav-links{
+    display:flex; align-items:center; gap:30px;
+    font-family:var(--mono); font-size:13px; color:var(--muted);
+  }
+  .nav-links a{ color:var(--muted); text-decoration:none; transition:color .2s; }
+  .nav-links a:hover{ color:var(--fg); }
+  .nav-right{ display:flex; align-items:center; gap:14px; }
+  .btn-ghost{
+    font-family:var(--mono); font-size:13px; color:var(--fg-dim);
+    background:transparent; border:1px solid var(--panel-border);
+    padding:8px 14px; border-radius:8px; text-decoration:none;
+    transition:border-color .2s, color .2s, background .2s;
+  }
+  .btn-ghost:hover{ border-color:var(--muted-2); color:var(--fg); background:rgba(255,255,255,0.03); }
+  @media (max-width:760px){ .nav-links{ display:none; } }
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative; z-index:1;
+    max-width:1040px; margin:0 auto;
+    padding:96px 24px 40px;
+    text-align:center;
+    display:flex; flex-direction:column; align-items:center;
+  }
+
+  .eyebrow{
+    font-family:var(--mono); font-size:12.5px; color:var(--cyan);
+    background:rgba(94,234,212,0.08); border:1px solid rgba(94,234,212,0.2);
+    padding:6px 14px; border-radius:100px; letter-spacing:.02em;
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .eyebrow .dot{ width:6px; height:6px; border-radius:50%; background:var(--cyan); animation:blink 1.4s step-end infinite; }
+
+  .headline{
+    font-family:var(--sans); font-weight:800; letter-spacing:-.03em;
+    font-size:clamp(34px, 6vw, 62px); line-height:1.08;
+    margin-top:26px; color:var(--fg);
+  }
+  .headline .line{ display:block; }
+  .headline .accent{
+    background:linear-gradient(100deg, var(--cyan), var(--blue) 60%, var(--purple));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+
+  .subtext{
+    font-family:var(--sans); font-size:17px; line-height:1.6; color:var(--muted);
+    max-width:560px; margin-top:22px;
+  }
+
+  .cta-row{
+    display:flex; align-items:center; gap:12px; margin-top:34px; flex-wrap:wrap; justify-content:center;
+  }
+
+  .install-box{
+    display:flex; align-items:center; gap:10px;
+    font-family:var(--mono); font-size:13.5px; color:var(--fg-dim);
+    background:var(--panel); border:1px solid var(--panel-border);
+    padding:11px 10px 11px 16px; border-radius:10px;
+    box-shadow:0 12px 30px -14px rgba(0,0,0,.6);
+  }
+  .install-box .prefix{ color:var(--muted-2); user-select:none; }
+  .install-box code{ color:var(--cyan); white-space:nowrap; }
+  .copy-btn{
+    display:flex; align-items:center; justify-content:center;
+    width:30px; height:30px; border-radius:7px; border:1px solid var(--panel-border);
+    background:rgba(255,255,255,0.02); color:var(--muted); cursor:pointer;
+    transition:background .18s, color .18s, transform .12s, border-color .18s;
+  }
+  .copy-btn:hover{ background:rgba(255,255,255,0.06); color:var(--fg); border-color:var(--muted-2); }
+  .copy-btn:active{ transform:scale(.92); }
+  .copy-btn svg{ width:14px; height:14px; }
+
+  .btn-primary{
+    font-family:var(--sans); font-weight:600; font-size:14.5px;
+    color:#04120f; background:linear-gradient(135deg, var(--cyan), var(--blue));
+    padding:12px 22px; border-radius:10px; text-decoration:none;
+    display:inline-flex; align-items:center; gap:8px;
+    box-shadow:0 14px 30px -12px rgba(94,234,212,0.35);
+    transition:transform .25s var(--ease-out-expo), box-shadow .25s var(--ease-out-expo);
+  }
+  .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 18px 36px -12px rgba(94,234,212,0.45); }
+  .btn-primary svg{ width:15px; height:15px; }
+
+  /* ---------- terminal preview mount ---------- */
+  .preview-wrap{
+    width:100%; max-width:960px; margin-top:56px;
+  }
+
+  @keyframes blink{ 50%{ opacity:.25; } }
+
+  /* ---------- feature strip ---------- */
+  .strip{
+    position:relative; z-index:1;
+    max-width:1040px; margin:104px auto 0; padding:0 24px 100px;
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:20px;
+  }
+  .strip-card{
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:14px;
+    padding:22px 20px;
+    opacity:0; transform:translateY(18px);
+    transition:opacity .7s var(--ease-out-expo), transform .7s var(--ease-out-expo), border-color .2s;
+  }
+  .strip-card.show{ opacity:1; transform:translateY(0); }
+  .strip-card:hover{ border-color:var(--muted-2); }
+  .strip-card .icon{
+    width:34px; height:34px; border-radius:9px; display:grid; place-items:center;
+    margin-bottom:14px;
+  }
+  .strip-card .icon svg{ width:17px; height:17px; }
+  .strip-card h3{ font-size:15px; font-weight:600; margin-bottom:6px; letter-spacing:-.01em; }
+  .strip-card p{ font-size:13.5px; color:var(--muted); line-height:1.55; }
+  @media (max-width:760px){ .strip{ grid-template-columns:1fr; } }
+
+  footer{
+    position:relative; z-index:1;
+    text-align:center; padding:36px 24px 48px;
+    font-family:var(--mono); font-size:12px; color:var(--muted-2);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.001s !important; transition-duration:.001s !important; animation-delay:0s !important; }
+    .headline .line-inner{ transform:translateY(0) !important; }
+  }
+
+  @media (max-width:560px){
+    .hero{ padding:64px 18px 24px; }
+    .install-box code{ font-size:12px; }
+    .nav{ padding:16px 18px; }
+  }
+
+  /* ================= embedded terminal component (unchanged aesthetic) ================= */
+  .terminal{
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 40px 90px -30px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.02) inset;
+  }
+  .titlebar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 6px 0 14px; height:38px;
+    background:linear-gradient(180deg, #12161e, #0f131a);
+    border-bottom:1px solid var(--panel-border);
+    min-width:0;
+  }
+  .titlebar-left{
+    display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12px; color:var(--muted-2);
+    min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;
+  }
+  .win-icon{ width:12px; height:12px; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:1.5px; flex-shrink:0; }
+  .win-icon i{ background:var(--blue); border-radius:1px; }
+  .win-btns{ display:flex; align-items:stretch; height:100%; flex-shrink:0; }
+  .win-btns button{
+    width:42px; height:38px; border:none; background:transparent; color:var(--muted-2);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .15s, color .15s;
+  }
+  .win-btns button:hover{ background:rgba(255,255,255,0.06); color:var(--fg); }
+  .win-btns button.close:hover{ background:#e81123; color:#fff; }
+  .win-btns svg{ width:10px; height:10px; }
+
+  .term-body{
+    font-family:var(--mono);
+    font-size:12.2px;
+    line-height:1.32;
+    padding:18px 22px 18px;
+  }
+
+  .prompt{ color:var(--muted); margin-bottom:1px; display:flex; flex-wrap:wrap; align-items:baseline; }
+  .prompt .path{ color:var(--cyan); }
+  .prompt .arrow{ color:var(--muted-2); margin:0 2px; }
+  #idlePrompt{ margin-top:14px; margin-bottom:0; }
+
+  .caret{
+    width:7px; height:14px; background:var(--cyan); display:inline-block;
+    margin-left:2px; animation:blink 1s step-end infinite; flex-shrink:0;
+  }
+
+  .art-info{ display:flex; gap:24px; align-items:flex-start; margin-top:6px; }
+  .ascii{
+    flex-shrink:0; font-size:10.5px; line-height:1.5; letter-spacing:1px; white-space:pre;
+    opacity:0; transition:opacity .5s ease;
+  }
+  .ascii.show{ opacity:1; }
+  .ascii .row{ display:block; }
+  .ascii .a{ color:var(--red); }
+  .ascii .b{ color:#4b5160; }
+
+  .info{ flex:1; min-width:0; }
+  .info-row{
+    display:flex; align-items:baseline; gap:8px; white-space:nowrap;
+    opacity:0; transform:translateX(-6px);
+    transition:opacity .35s var(--ease-out-expo), transform .35s var(--ease-out-expo);
+  }
+  .info-row.show{ opacity:1; transform:translateX(0); }
+  .info-row.banner-row{ color:var(--cyan); font-weight:700; margin-bottom:2px; }
+  .info-row svg{ width:12.5px; height:12.5px; flex-shrink:0; position:relative; top:1px; }
+  .info-key{ font-weight:600; }
+  .info-val{ color:var(--muted); overflow:hidden; text-overflow:ellipsis; }
+  .k-blue{ color:var(--blue); } .k-blue svg{ color:var(--blue); }
+  .k-red{ color:var(--red); } .k-red svg{ color:var(--red); }
+  .k-orange{ color:var(--orange); } .k-orange svg{ color:var(--orange); }
+  .k-green{ color:var(--green); } .k-green svg{ color:var(--green); }
+  .k-purple{ color:var(--purple); } .k-purple svg{ color:var(--purple); }
+  .k-cyan{ color:var(--cyan); } .k-cyan svg{ color:var(--cyan); }
+
+  .mono-block{ overflow-x:hidden; margin-top:16px; }
+  .mono-row{
+    font-family:var(--mono); font-size:inherit; line-height:1.5;
+    color:var(--muted); white-space:pre;
+    opacity:0; transform:translateX(-6px);
+    transition:opacity .35s var(--ease-out-expo), transform .35s var(--ease-out-expo);
+  }
+  .mono-row.show{ opacity:1; transform:translateX(0); }
+  .mono-row .tilde{ color:var(--muted-2); margin-right:6px; }
+  .mono-row b{ color:var(--fg-dim); font-weight:500; }
+  .mono-row .pct{ color:var(--orange); font-weight:600; }
+  .mono-row .pct-high{ color:var(--red); }
+  .mono-row .pct-mid{ color:var(--orange); }
+  .mono-row .pct-low{ color:var(--green); }
+  .mono-row .size{ color:var(--muted); }
+  .mono-row .fs{ color:var(--orange); }
+  .mono-row .int{ color:var(--muted-2); }
+  .mono-row .ext{ color:var(--purple); }
+  .mono-row .bracket{ color:var(--muted-2); }
+  .mono-row .type-ssd{ color:var(--cyan); font-weight:600; }
+  .mono-row .type-hdd{ color:var(--blue); font-weight:600; }
+  .mono-row .type-usb{ color:var(--purple); font-weight:600; }
+  .mono-row .type-generic{ color:var(--fg-dim); font-weight:600; }
+  .mono-row .read{ color:var(--green); }
+  .mono-row .write{ color:var(--orange); }
+  .mono-row .sn{ color:var(--muted-2); }
+  .mono-row.head-row{ color:var(--muted-2); font-weight:500; }
+  .mono-row.head-row .prefix{ color:var(--muted-2); }
+  .mono-row.head-row .hl{ color:var(--cyan); font-weight:700; }
+
+  @media (max-width:760px){
+    .art-info{ flex-direction:column; gap:12px; }
+    .ascii{ font-size:9px; align-self:flex-start; }
+  }
+  @media (max-width:560px){
+    .term-body{ font-size:11px; padding:14px 12px; }
+    .info-row{ white-space:normal; }
+    .titlebar{ padding:0 4px 0 10px; }
+  }
+</style>
+</head>
+<body class="locked">
+
+<div id="splash">
+  <div class="splash-inner">
+    <div class="splash-cmd" id="splashCmd">
+      <span class="path">PS C:\Users\dev</span><span class="arrow">&gt;</span><span id="splashTyped"></span><span class="scaret"></span>
+    </div>
+    <div class="splash-logo" id="splashLogo">
+      <span class="mark">&gt;_</span>
+      <h1>BinaryFetch</h1>
+    </div>
+    <p class="splash-tag" id="splashTag">system info, instantly</p>
+  </div>
+</div>
+
+<div class="page" id="page">
+
+<div class="bg-fx"></div>
+<div class="bg-glow" id="heroGlow"></div>
+
+<nav class="nav">
+  <a class="nav-logo" href="#">
+    <span class="mark">&gt;_</span>
+    BinaryFetch
+  </a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#install">Install</a>
+    <a href="#">Docs</a>
+  </div>
+  <div class="nav-right">
+    <a class="btn-ghost" href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <span class="eyebrow"><span class="dot"></span>PS C:\Users\dev&gt; binaryfetch --welcome</span>
+
+  <h1 class="headline">
+    <span class="line">Your machine,</span>
+    <span class="line">fetched <span class="accent">instantly.</span></span>
+  </h1>
+
+  <p class="subtext">
+    A blazing-fast system info tool for your terminal — CPU, GPU, memory, displays,
+    and disks, laid out the way <code style="font-family:var(--mono); color:var(--fg-dim);">neofetch</code> always wanted to look.
+  </p>
+
+  <div class="cta-row" id="install">
+    <div class="install-box">
+      <span class="prefix">&gt;</span>
+      <code id="installCmd">iwr -useb binaryfetch.dev/install.ps1 | iex</code>
+      <button class="copy-btn" id="copyBtn" aria-label="Copy install command">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="copyIcon"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      </button>
+    </div>
+    <a class="btn-primary" href="https://github.com" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.5 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1 .07 1.53 1.05 1.53 1.05.89 1.57 2.34 1.12 2.91.86.09-.66.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.31.1-2.73 0 0 .84-.28 2.75 1.05a9.3 9.3 0 0 1 5 0c1.91-1.33 2.75-1.05 2.75-1.05.55 1.42.2 2.47.1 2.73.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.79-4.57 5.05.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.6.69.5A10.26 10.26 0 0 0 22 12.25C22 6.58 17.52 2 12 2Z"/></svg>
+      Star on GitHub
+    </a>
+  </div>
+
+  <div class="preview-wrap" id="previewWrap">
+    <div class="terminal">
+      <div class="titlebar">
+        <div class="titlebar-left">
+          <span class="win-icon"><i></i><i></i><i></i><i></i></span>
+          <span>BinaryFetch — Windows PowerShell</span>
+        </div>
+        <div class="win-btns">
+          <button aria-label="Minimize"><svg viewBox="0 0 10 10"><rect x="0" y="4.5" width="10" height="1" fill="currentColor"/></svg></button>
+          <button aria-label="Maximize"><svg viewBox="0 0 10 10"><rect x="0.5" y="0.5" width="9" height="9" fill="none" stroke="currentColor"/></svg></button>
+          <button class="close" aria-label="Close"><svg viewBox="0 0 10 10"><path d="M0.5 0.5L9.5 9.5M9.5 0.5L0.5 9.5" stroke="currentColor" stroke-width="1.1"/></svg></button>
+        </div>
+      </div>
+
+      <div class="term-body" id="termBody">
+
+        <div class="prompt" id="cmdLine">
+          <span class="path">PS C:\Users\dev</span><span class="arrow">&gt;</span><span id="typedCmd"></span><span class="caret" id="cmdCaret"></span>
+        </div>
+
+        <div class="art-info" id="artInfo">
+          <div class="ascii" id="ascii"></div>
+
+          <div class="info" id="infoRows">
+            <div class="info-row banner-row"><span>~&gt;&gt; BinaryFetch</span></div>
+            <div class="info-row k-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><span class="info-key">Time:</span><span class="info-val">(16:59:05) (Date: 11 : August : 2026) (Week: 32 - Tuesday)</span></div>
+            <div class="info-row k-red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span class="info-key">OS:</span><span class="info-val">Windows 11 10.0 (Build 26200) (64-bit) (uptime: 3h 35m)</span></div>
+            <div class="info-row k-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="6" width="12" height="12" rx="1.5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg><span class="info-key">CPU:</span><span class="info-val">AMD Ryzen 5 5600G with Radeon Graphics (6C/12T) @ 3.89 GHz</span></div>
+            <div class="info-row k-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10v4M10 10v4M14 10v4M18 10v4"/></svg><span class="info-key">GPU:</span><span class="info-val">NVIDIA GeForce RTX 4070 SUPER (28%) (11.9941 GB) (@660 MHz)</span></div>
+            <div class="info-row k-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="13" rx="1.5"/><path d="M8 21h8M12 17v4"/></svg><span class="info-key">Display 1:</span><span class="info-val">DELL S2240L (3840 x 2160) (Scale: 175%) (@60Hz)</span></div>
+            <div class="info-row k-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="13" rx="1.5"/><path d="M8 21h8M12 17v4"/></svg><span class="info-key">Display 2:</span><span class="info-val">HP M22f FHD (3840 x 2160) (Scale: 175%) (@60Hz)</span></div>
+            <div class="info-row k-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="12" rx="2"/><path d="M2 20h20"/></svg><span class="info-key">Memory:</span><span class="info-val">(total: 47.2937 GB) (free: 26.4722 GB) (44%)</span></div>
+            <div class="info-row k-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M9 22h6"/></svg><span class="info-key">Audio Input:</span><span class="info-val">Microphone (Maono PD 100U) [Active]</span></div>
+            <div class="info-row k-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3ZM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3Z"/></svg><span class="info-key">Audio Output:</span><span class="info-val">Headphones (MSL-906) [Active]</span></div>
+            <div class="info-row k-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="info-key">Performance:</span><span class="info-val">(CPU: 23%) (GPU: 34%) (RAM: 44%) (Disk: 98%)</span></div>
+            <div class="info-row k-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span class="info-key">User:</span><span class="info-val">@coffee~ (Domain: InterCentury) (Type: Admin)</span></div>
+            <div class="info-row k-cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5a7 7 0 0 1 14 0M8.5 15.5a3.5 3.5 0 0 1 7 0M12 18.5v.01"/></svg><span class="info-key">Network:</span><span class="info-val">(Name: InterCentury) (Type: Ethernet) (ip: 192.168.137.1)</span></div>
+            <div class="info-row k-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg><span class="info-key">Disk Usage:</span><span class="info-val">(C: 98%) (D: 61%) (G: 96%) (H: 99%) (I: 71%) (Y: 66%)</span></div>
+          </div>
+        </div>
+
+        <div class="indent mono-block" id="memRows"></div>
+        <div class="indent mono-block" id="storageBody"></div>
+        <div class="indent mono-block" id="perfBody"></div>
+
+        <div class="prompt" id="idlePrompt">
+          <span class="path">PS C:\Users\dev</span><span class="arrow">&gt;</span><span id="typedClear"></span><span class="caret" id="idleCaret"></span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="strip" id="features">
+  <div class="strip-card">
+    <div class="icon" style="background:rgba(94,234,212,0.1); color:var(--cyan);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
+    </div>
+    <h3>Instant</h3>
+    <p>Reads your hardware and prints a full report before you've let go of Enter.</p>
+  </div>
+  <div class="strip-card">
+    <div class="icon" style="background:rgba(96,165,250,0.1); color:var(--blue);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="12" rx="2"/><path d="M2 20h20"/></svg>
+    </div>
+    <h3>Everything, once</h3>
+    <p>CPU, GPU, RAM, displays, disks, audio and network — one call, no plugins.</p>
+  </div>
+  <div class="strip-card">
+    <div class="icon" style="background:rgba(167,139,250,0.1); color:var(--purple);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <h3>Open source</h3>
+    <p>MIT licensed, no telemetry, no accounts. Fork it, theme it, ship it.</p>
+  </div>
+</section>
+
+<footer>BinaryFetch — built for the terminal. © 2026</footer>
+
+</div><!-- /.page -->
+
+<script>
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const sleep = ms => new Promise(r => setTimeout(r, reduced ? 0 : ms));
+
+  /* ---------- copy install command ---------- */
+  const copyBtn = document.getElementById('copyBtn');
+  const copyIcon = document.getElementById('copyIcon');
+  const installCmd = document.getElementById('installCmd').textContent;
+  const checkSvg = '<path d="M20 6 9 17l-5-5"/>';
+  const clipSvg = copyIcon.innerHTML;
+  copyBtn.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(installCmd); } catch(e) {}
+    copyIcon.innerHTML = checkSvg;
+    copyIcon.style.color = 'var(--green)';
+    setTimeout(() => { copyIcon.innerHTML = clipSvg; copyIcon.style.color = ''; }, 1400);
+  });
+
+  /* ---------- subtle cursor-follow parallax on hero glow ---------- */
+  const glow = document.getElementById('heroGlow');
+  let gx = 0, gy = 0, tx = 0, ty = 0;
+  if (!reduced) {
+    window.addEventListener('mousemove', e => {
+      tx = (e.clientX / window.innerWidth - 0.5) * 40;
+      ty = (e.clientY / window.innerHeight - 0.5) * 24;
+    });
+    (function loop(){
+      gx += (tx - gx) * 0.04;
+      gy += (ty - gy) * 0.04;
+      glow.style.marginLeft = gx.toFixed(1) + 'px';
+      glow.style.marginTop = gy.toFixed(1) + 'px';
+      requestAnimationFrame(loop);
+    })();
+  }
+
+  /* ---------- feature strip scroll reveal ---------- */
+  const cards = document.querySelectorAll('.strip-card');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('show'), i * 90);
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  cards.forEach(c => io.observe(c));
+
+  /* =====================================================================
+     Embedded terminal component (same behaviour as the standalone preview)
+     Kicks off automatically once the hero entrance animation completes.
+  ===================================================================== */
+  const asciiEl      = document.getElementById('ascii');
+  const artInfo       = document.getElementById('artInfo');
+  const infoRowsEl    = document.getElementById('infoRows');
+  const cmdLine        = document.getElementById('cmdLine');
+  const typedCmd      = document.getElementById('typedCmd');
+  const cmdCaret      = document.getElementById('cmdCaret');
+  const idlePrompt    = document.getElementById('idlePrompt');
+  const typedClear    = document.getElementById('typedClear');
+  const idleCaret      = document.getElementById('idleCaret');
+  const termBody      = document.getElementById('termBody');
+  const previewWrap    = document.getElementById('previewWrap');
+
+  const N = 16, HALF = 8;
+  let asciiHtml = '';
+  for(let r=0;r<HALF;r++){
+    asciiHtml += `<span class="row"><span class="a">${'#'.repeat(N)}</span> <span class="b">${'<'.repeat(N)}</span></span>`;
+  }
+  for(let r=0;r<HALF;r++){
+    asciiHtml += `<span class="row"><span class="b">${'>'.repeat(N)}</span> <span class="a">${'#'.repeat(N)}</span></span>`;
+  }
+  asciiEl.innerHTML = asciiHtml;
+
+  const memData = {
+    total: 48, free: 26, used: 45,
+    banks: [
+      { label: 'Memory 0:', used: 45, size: '16GB' },
+      { label: 'Memory 1:', used: 45, size: '08GB' },
+      { label: 'Memory 2:', used: 45, size: '16GB' },
+      { label: 'Memory 3:', used: 45, size: '08GB' },
+    ]
+  };
+
+  const disks = [
+    { type: 'SSD', drive: 'C:', used: 234.20, total: 237.10, pct: 98, fs: 'NTFS', ext: 'Int' },
+    { type: 'HDD', drive: 'D:', used: 287.14, total: 465.76, pct: 61, fs: 'NTFS', ext: 'Int' },
+    { type: 'USB', drive: 'G:', used: 108.63, total: 112.64, pct: 96, fs: 'NTFS', ext: 'Ext' },
+    { type: 'HDD', drive: 'H:', used: 925.86, total: 931.50, pct: 99, fs: 'NTFS', ext: 'Int' },
+    { type: 'SSD', drive: 'I:', used: 79.28,  total: 110.79, pct: 71, fs: 'NTFS', ext: 'Int' },
+    { type: 'HDD', drive: 'Y:', used: 307.79, total: 465.75, pct: 66, fs: 'NTFS', ext: 'Int' },
+  ];
+
+  const perf = [
+    { drive: 'C:', read: 1240.70, write: 770.78, sn: 'SN-1000', ext: 'Int' },
+    { drive: 'D:', read: 75.41,   write: 66.31,  sn: 'SN-1001', ext: 'Int' },
+    { drive: 'G:', read: 150.36,  write: 64.16,  sn: 'SN-1002', ext: 'Ext' },
+    { drive: 'H:', read: 124.15,  write: 106.44, sn: 'SN-1003', ext: 'Int' },
+    { drive: 'I:', read: 515.14,  write: 436.85, sn: 'SN-1004', ext: 'Int' },
+    { drive: 'Y:', read: 110.26,  write: 84.49,  sn: 'SN-1005', ext: 'Int' },
+  ];
+
+  const pctClass = p => p >= 90 ? 'pct-high' : p >= 50 ? 'pct-mid' : 'pct-low';
+  const typeClass = t => t === 'SSD' ? 'type-ssd' : t === 'HDD' ? 'type-hdd' : 'type-usb';
+  const pctField = p => `(${p}%)`.padStart(5);
+
+  function buildMemRows(){
+    const rows = [];
+    const totalPlain = `~ (Total: ${memData.total} GB) (Free: ${memData.free} GB) (Used: ${memData.used}%)`;
+    const totalHtml  = `<span class="tilde">~</span>(Total: <b>${memData.total} GB</b>) (Free: <b>${memData.free} GB</b>) (Used: <span class="pct">${memData.used}%</span>)`;
+    rows.push({ plain: totalPlain, html: totalHtml });
+    memData.banks.forEach(b => {
+      const plain = `~ ${b.label.padEnd(10)}(Used: ${String(b.used).padStart(2)}%) ${b.size} DDR4 2133 MHz`;
+      const html  = `<span class="tilde">~</span>${b.label.padEnd(10)}(Used: <span class="pct">${String(b.used).padStart(2)}%</span>) <b>${b.size}</b> DDR4 2133 MHz`;
+      rows.push({ plain, html });
+    });
+    return rows;
+  }
+
+  function buildStorageRows(){
+    return disks.map(d => {
+      const label = `${d.type} Disk (${d.drive})`.padEnd(14);
+      const usedStr = d.used.toFixed(2).padStart(6);
+      const totalStr = d.total.toFixed(2).padStart(6);
+      const pf = pctField(d.pct);
+      const extStr = d.ext.padEnd(3);
+      const plain = `${label}[ (Used)   ${usedStr} GiB / ${totalStr} GiB  ${pf} - ${d.fs}  ${extStr} ]`;
+      const html = `<span class="${typeClass(d.type)}">${label}</span><span class="bracket">[</span> (Used)   <span class="size">${usedStr} GiB / ${totalStr} GiB</span>  <span class="pct ${pctClass(d.pct)}">${pf}</span> - <span class="fs">${d.fs}</span>  <span class="${d.ext === 'Int' ? 'int' : 'ext'}">${extStr}</span> <span class="bracket">]</span>`;
+      return { plain, html };
+    });
+  }
+
+  function buildPerfRows(){
+    return perf.map(p => {
+      const label = `Disk (${p.drive})`.padEnd(10);
+      const readStr = p.read.toFixed(2).padStart(7);
+      const writeStr = p.write.toFixed(2).padStart(7);
+      const plain = `${label}[ Read: ${readStr} MB/s | Write: ${writeStr} MB/s | ${p.sn} ${p.ext} ]`;
+      const html = `<span class="type-generic">${label}</span><span class="bracket">[</span> <span class="read">Read: ${readStr} MB/s</span> <span class="bracket">|</span> <span class="write">Write: ${writeStr} MB/s</span> <span class="bracket">|</span> <span class="sn">${p.sn} ${p.ext}</span> <span class="bracket">]</span>`;
+      return { plain, html };
+    });
+  }
+
+  function buildLeftHeader(label, targetWidth){
+    const prefix = '~>> ';
+    const head = `${prefix}${label} `;
+    const dashCount = Math.max(3, targetWidth - head.length - 1);
+    const dashes = '-'.repeat(dashCount);
+    return {
+      plain: `${head}${dashes}*`,
+      html: `<span class="prefix">${prefix}</span><span class="hl">${label}</span> ${dashes}*`
+    };
+  }
+
+  function buildCenteredHeader(label, targetWidth){
+    const inner = ` ${label} `;
+    const totalDash = Math.max(4, targetWidth - inner.length);
+    const left = Math.floor(totalDash / 2);
+    const right = totalDash - left;
+    const l = '-'.repeat(left);
+    const r = '-'.repeat(right);
+    return {
+      plain: `${l}${inner}${r}`,
+      html: `${l}<span class="hl">${inner}</span>${r}`
+    };
+  }
+
+  const memContentRows = buildMemRows();
+  const memWidth = Math.max(...memContentRows.map(r => r.plain.length));
+  const memHeader = buildLeftHeader('Memory Info', memWidth);
+  memHeader.isHead = true;
+  const memRowsFinal = [memHeader, ...memContentRows];
+
+  const storageContentRows = buildStorageRows();
+  const storageWidth = Math.max(...storageContentRows.map(r => r.plain.length));
+  const storageHeader = buildCenteredHeader('STORAGE SUMMARY', storageWidth);
+  storageHeader.isHead = true;
+  const storageRowsFinal = [storageHeader, ...storageContentRows];
+
+  const perfContentRows = buildPerfRows();
+  const perfWidth = Math.max(...perfContentRows.map(r => r.plain.length));
+  const perfHeader = buildCenteredHeader('DISK PERFORMANCE & DETAILS', perfWidth);
+  perfHeader.isHead = true;
+  const perfRowsFinal = [perfHeader, ...perfContentRows];
+
+  let iconOffsetPx = 0;
+  function computeIconOffset(){
+    if (window.innerWidth <= 760) { iconOffsetPx = 0; return; }
+    const icon = infoRowsEl.querySelector('.info-row svg');
+    if (!icon) return;
+    const r1 = icon.getBoundingClientRect();
+    const r2 = termBody.getBoundingClientRect();
+    if (r1.width === 0 && r1.height === 0) return;
+    iconOffsetPx = Math.round(r1.left - r2.left);
+  }
+  function applyOffset(){
+    ['memRows','storageBody','perfBody'].forEach(id => {
+      document.getElementById(id).style.paddingLeft = iconOffsetPx + 'px';
+    });
+  }
+
+  const BASE_MONO_SIZE = 12;
+  function fitMonoBlock(id){
+    const el = document.getElementById(id);
+    if (!el || !el.firstElementChild) return;
+    el.style.fontSize = BASE_MONO_SIZE + 'px';
+    const available = el.clientWidth;
+    const needed = el.scrollWidth;
+    if (needed > available && available > 0) {
+      const fitted = Math.max(7, Math.floor((BASE_MONO_SIZE * (available / needed)) * 100) / 100);
+      el.style.fontSize = fitted + 'px';
+    }
+  }
+  function fitAllMonoBlocks(){
+    ['memRows','storageBody','perfBody'].forEach(fitMonoBlock);
+  }
+
+  let isFullState = false;
+  function lockHeight(){
+    termBody.style.minHeight = '0px';
+    void termBody.offsetHeight;
+    const h = termBody.scrollHeight;
+    termBody.style.minHeight = h + 'px';
+  }
+
+  window.addEventListener('resize', () => {
+    if (artInfo.style.display !== 'none') { computeIconOffset(); applyOffset(); }
+    fitAllMonoBlocks();
+    if (isFullState) lockHeight();
+  });
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => {
+      if (artInfo.style.display !== 'none') { computeIconOffset(); applyOffset(); fitAllMonoBlocks(); }
+      if (isFullState) lockHeight();
+    });
+  }
+
+  async function typeText(el, text, min = 40, max = 85){
+    el.textContent = '';
+    for (const ch of text){
+      el.textContent += ch;
+      await sleep(min + Math.random() * (max - min));
+    }
+  }
+
+  async function revealBlock(containerId, rowsData, step = 45){
+    const el = document.getElementById(containerId);
+    el.innerHTML = rowsData.map(row => {
+      const cls = row.isHead ? 'mono-row head-row' : 'mono-row';
+      return `<div class="${cls}">${row.html}</div>`;
+    }).join('');
+    fitMonoBlock(containerId);
+    const rowEls = Array.from(el.children);
+    for (const r of rowEls){
+      r.classList.add('show');
+      await sleep(step);
+    }
+  }
+
+  function resetForTyping(){
+    isFullState = false;
+    typedCmd.textContent = '';
+    cmdCaret.style.display = '';
+    artInfo.style.display = 'none';
+    asciiEl.classList.remove('show');
+    infoRowsEl.querySelectorAll('.info-row').forEach(r => r.classList.remove('show'));
+    document.getElementById('memRows').innerHTML = '';
+    document.getElementById('storageBody').innerHTML = '';
+    document.getElementById('perfBody').innerHTML = '';
+    idlePrompt.style.display = 'none';
+    typedClear.textContent = '';
+  }
+
+  async function runCycle(){
+    resetForTyping();
+
+    await typeText(typedCmd, 'binaryfetch');
+    cmdCaret.style.display = 'none';
+    await sleep(250);
+
+    artInfo.style.display = 'flex';
+    computeIconOffset();
+    applyOffset();
+    asciiEl.classList.add('show');
+    const infoRowEls = Array.from(infoRowsEl.querySelectorAll('.info-row'));
+    for (const row of infoRowEls){
+      row.classList.add('show');
+      await sleep(50);
+    }
+    await sleep(150);
+
+    await revealBlock('memRows', memRowsFinal);
+    await sleep(100);
+    await revealBlock('storageBody', storageRowsFinal);
+    await sleep(100);
+    await revealBlock('perfBody', perfRowsFinal);
+
+    await sleep(300);
+    idlePrompt.style.display = 'flex';
+    isFullState = true;
+    lockHeight();
+
+    await sleep(7000);
+
+    await typeText(typedClear, 'clear');
+    await sleep(450);
+
+    runCycle();
+  }
+
+  function renderStatic(){
+    typedCmd.textContent = 'binaryfetch';
+    cmdCaret.style.display = 'none';
+    artInfo.style.display = 'flex';
+    computeIconOffset();
+    applyOffset();
+    asciiEl.classList.add('show');
+    infoRowsEl.querySelectorAll('.info-row').forEach(r => r.classList.add('show'));
+
+    const fill = (id, rows) => {
+      const el = document.getElementById(id);
+      el.innerHTML = rows.map(row => {
+        const cls = row.isHead ? 'mono-row head-row show' : 'mono-row show';
+        return `<div class="${cls}">${row.html}</div>`;
+      }).join('');
+      fitMonoBlock(id);
+    };
+    fill('memRows', memRowsFinal);
+    fill('storageBody', storageRowsFinal);
+    fill('perfBody', perfRowsFinal);
+
+    idlePrompt.style.display = 'flex';
+    isFullState = true;
+    lockHeight();
+  }
+
+  function measureFullHeight(){
+    typedCmd.textContent = 'binaryfetch';
+    artInfo.style.display = 'flex';
+    computeIconOffset();
+    applyOffset();
+
+    const fill = (id, rows) => {
+      const el = document.getElementById(id);
+      el.innerHTML = rows.map(row => {
+        const cls = row.isHead ? 'mono-row head-row' : 'mono-row';
+        return `<div class="${cls}">${row.html}</div>`;
+      }).join('');
+      fitMonoBlock(id);
+    };
+    fill('memRows', memRowsFinal);
+    fill('storageBody', storageRowsFinal);
+    fill('perfBody', perfRowsFinal);
+
+    idlePrompt.style.display = 'flex';
+
+    termBody.style.minHeight = '0px';
+    void termBody.offsetHeight;
+    termBody.style.minHeight = termBody.scrollHeight + 'px';
+
+    resetForTyping();
+  }
+
+  /* =====================================================================
+     Intro splash: "BinaryFetch" arrives smoothly, holds, then the whole
+     splash fades/lifts away as the page underneath opens up. The terminal
+     boot cycle only starts once the page has fully revealed.
+  ===================================================================== */
+  const splash      = document.getElementById('splash');
+  const splashCmd    = document.getElementById('splashCmd');
+  const splashTyped  = document.getElementById('splashTyped');
+  const splashLogo   = document.getElementById('splashLogo');
+  const splashTag    = document.getElementById('splashTag');
+  const page          = document.getElementById('page');
+
+  async function runIntro(){
+    document.body.classList.add('locked');
+
+    // 1. small terminal prompt types the brand's own command
+    await sleep(300);
+    await typeText(splashTyped, 'binaryfetch', 45, 70);
+    await sleep(280);
+
+    // 2. prompt steps aside, the wordmark arrives smoothly
+    splashCmd.classList.add('hide');
+    await sleep(150);
+    splashLogo.classList.add('show');
+    await sleep(350);
+    splashTag.classList.add('show');
+
+    // 3. hold on the brand moment
+    await sleep(900);
+
+    // 4. background fades out and lifts away, page opens up underneath
+    splash.classList.add('leaving');
+    await sleep(90);
+    page.classList.add('revealed');
+
+    await sleep(950);
+    splash.style.display = 'none';
+    document.body.classList.remove('locked');
+
+    // 5. once the page has fully opened, the terminal preview boots itself
+    await sleep(250);
+    runCycle();
+  }
+
+  window.addEventListener('load', () => {
+    measureFullHeight();
+    if (reduced) {
+      renderStatic();
+      splash.style.display = 'none';
+      page.classList.add('revealed');
+      document.body.classList.remove('locked');
+    } else {
+      runIntro();
+    }
+  });
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => {
+      if (artInfo.style.display === 'none') measureFullHeight();
+    });
+  }
+</script>
+
+</body>
+</html>

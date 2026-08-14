@@ -43,16 +43,6 @@
     --accent: var(--cyan);
     --accent-rgb: 94,234,212;
     --art-gradient: linear-gradient(150deg, var(--red), var(--muted));
-
-    /* ============================================================
-       GLOBAL SIZE CONTROLS (mirrored from the two JS constants
-       TERMINAL_WIDTH / ART_BOX_HEIGHT near the top of the <script>
-       block below — JS is the single source of truth and pushes its
-       values into these two vars on load, so change the numbers in
-       JS, not here). Fallbacks below only matter before JS runs.
-       ============================================================ */
-    --terminal-width: 960px;
-    --art-box-height: 230px;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html{-webkit-font-smoothing:antialiased;}
@@ -87,7 +77,7 @@
   .wrap{
     position:relative; z-index:1;
     width:100%;
-    max-width:var(--terminal-width, 960px);
+    max-width:960px;
     opacity:0;
     transform:translateY(18px) scale(.98);
     animation:enter .7s cubic-bezier(.16,1,.3,1) forwards;
@@ -160,15 +150,6 @@
   .ascii{
     flex-shrink:0;
     max-width:46%;
-    /* Fixed vertical footprint (see --art-box-height / ART_BOX_HEIGHT in
-       JS): every rotating art is font-size-scaled in JS to fit inside
-       this box on BOTH axes, so a 16-row art and a 30-row art end up
-       occupying the same height here. That's what keeps the gap before
-       "Memory Info" constant across every art in the rotation instead
-       of jumping around. overflow:hidden is just a safety clamp for
-       sub-pixel rounding, it should never actually clip content. */
-    max-height:var(--art-box-height, 230px);
-    overflow:hidden;
     font-family:var(--ascii-mono);
     font-weight:800;
     font-size:10.5px;
@@ -185,12 +166,7 @@
   }
   .ascii.show{ opacity:1; }
 
-  .info{ 
-    flex:1; 
-    min-width:0;
-    display:flex;
-    flex-direction:column;
-  }
+  .info{ flex:1; min-width:0; }
   .info-row{
     display:flex;
     align-items:baseline;
@@ -212,14 +188,7 @@
   .k-purple{ color:var(--purple); } .k-purple svg{ color:var(--purple); }
   .k-cyan{ color:var(--cyan); } .k-cyan svg{ color:var(--cyan); }
 
-  .mono-block{ 
-    overflow-x:auto; 
-    overflow-y:hidden;
-    margin-top:16px; 
-  }
-  .mono-block:first-of-type {
-    margin-top:12px;
-  }
+  .mono-block{ overflow-x:hidden; margin-top:16px; }
   .mono-row{
     font-family:var(--mono); font-size:inherit; line-height:1.5;
     color:var(--muted); white-space:pre;
@@ -256,7 +225,6 @@
   @media (max-width:760px){
     .art-info{ flex-direction:column; gap:14px; }
     .ascii{ font-size:9px; align-self:flex-start; max-width:100%; }
-    .info { width: 100%; }
   }
   @media (max-width:560px){
     body{ padding:28px 10px; }
@@ -311,12 +279,12 @@
           <div class="info-row k-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span class="info-key">User:</span><span class="info-val">@coffee~ (Domain: InterCentury) (Type: Admin)</span></div>
           <div class="info-row k-cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5a7 7 0 0 1 14 0M8.5 15.5a3.5 3.5 0 0 1 7 0M12 18.5v.01"/></svg><span class="info-key">Network:</span><span class="info-val">(Name: InterCentury) (Type: Ethernet) (ip: 192.168.137.1)</span></div>
           <div class="info-row k-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg><span class="info-key">Disk Usage:</span><span class="info-val">(C: 98%) (D: 61%) (G: 96%) (H: 99%) (I: 71%) (Y: 66%)</span></div>
-
-          <div class="mono-block" id="memRows"></div>
-          <div class="mono-block" id="storageBody"></div>
-          <div class="mono-block" id="perfBody"></div>
         </div>
       </div>
+
+      <div class="indent mono-block" id="memRows"></div>
+      <div class="indent mono-block" id="storageBody"></div>
+      <div class="indent mono-block" id="perfBody"></div>
 
       <div class="prompt" id="idlePrompt">
         <span class="path">PS C:\Users\dev</span><span class="arrow">&gt;</span><span id="typedClear"></span><span class="caret" id="idleCaret"></span>
@@ -334,29 +302,6 @@
   // the next themed art types in. (Previously 7000ms, now 2500ms.)
   const HOLD_MS = 2500;
 
-  // ==============================================================
-  // GLOBAL SIZE CONTROLS — the two knobs requested for terminal sizing.
-  //
-  // TERMINAL_WIDTH  — max width (px) of the whole terminal window.
-  //                    Pushed into the CSS var --terminal-width, which
-  //                    .wrap's max-width reads from.
-  //
-  // ART_BOX_HEIGHT  — fixed height (px) that EVERY rotating ascii-art
-  //                    piece is scaled to fit inside, on both axes.
-  //                    This is the actual fix for the Art 6 issue: art
-  //                    used to only be scaled to fit the column WIDTH,
-  //                    so a short 16-row art (Art 1) and a tall 30-row
-  //                    art (Art 6) rendered at wildly different total
-  //                    heights. That made the block-art look cramped/
-  //                    overlapping for tall art, and made the gap before
-  //                    "Memory Info" shift between loops. Now every art
-  //                    is scaled down until it fits this exact box, so
-  //                    the footprint — and the spacing after it — stays
-  //                    identical no matter which art is showing.
-  // ==============================================================
-  const TERMINAL_WIDTH  = 960;
-  const ART_BOX_HEIGHT  = 230;
-
   const asciiEl      = document.getElementById('ascii');
   const artInfo       = document.getElementById('artInfo');
   const infoRowsEl    = document.getElementById('infoRows');
@@ -368,11 +313,6 @@
   const idleCaret      = document.getElementById('idleCaret');
   const termBody      = document.getElementById('termBody');
   const root          = document.documentElement;
-
-  // Push the two global size controls into CSS as early as possible
-  // (before first paint) so .wrap and .ascii both pick them up.
-  root.style.setProperty('--terminal-width', TERMINAL_WIDTH + 'px');
-  root.style.setProperty('--art-box-height', ART_BOX_HEIGHT + 'px');
 
   // ==============================================================
   // ART STORAGE — all 7 ascii arts live right here, one per constant.
@@ -447,22 +387,22 @@
 ⠀⠀⡪⠀⠀⠀⠀⠀⠀⡘⠁⠚⠃⢠⡄⡐⠻⠆⠀⠿⠂⢀⡀⠀⠀⠀⠀⠀⠀⠀`;
 
   const ART5 = `⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ ⣾⣿⣿⣿⣿⣷⢸⣿⣿⡜⢯⣷⡌⡻⣿⣿⣿⣆⢈⠻⠿⢿⣿⣿⣿⣿⣿⣿⣷⣦⣤⣀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡁⢳⣿⣿⣿⣿⣿⣿⡜⣿⣿⣧⢀⢻⣷⠰⠈⢿⣿⣿⣧⢣⠉⠑⠪⢙⠿⠿⠿⠿⠿⠿⠿⠋⠁⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣱⡇⡞⣿⣿⣿⣿⣿⣿⡇⣿⣿⡏⡄⣧⠹⡇⠧⠈⢻⣿⣿⡇⢧⢢⠀⠀⠑⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣇⢃⢿⣿⣿⣿⣿⣿⣷⣿⣿⠇⢃⣡⣤⡹⠐⣿⣀⢻⣿⣿⢸⡎⠳⡄⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡁⢳⣿⣿⣿⣿⣿⣿⡜⣿⣿⣧⢀⢻⣷⠰⠈⢿⣿⣿⣧⢣⠉⠑⠪⢙⠿⠿⠿⠿⠿⠿⠿⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣱⡇⡞⣿⣿⣿⣿⣿⣿⡇⣿⣿⡏⡄⣧⠹⡇⠧⠈⢻⣿⣿⡇⢧⢢⠀⠀⠑⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣇⢃⢿⣿⣿⣿⣿⣿⣷⣿⣿⠇⢃⣡⣤⡹⠐⣿⣀⢻⣿⣿⢸⡎⠳⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⣾⣿⣿⠘⡸⣿⣿⣿⣿⣿⣿⣿⡿⣰⣿⣿⢟⡷⠈⠋⠃⠎⢿⣿⡏⣿⠀⠘⢆⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⡐⢹⣿⣿⡐⢡⢹⣿⣿⣿⣿⡏⣿⢣⣿⣿⡑⠁⠔⠀⠉⠉⠢⡘⣿⡇⣿⡇⠀⡀⠡⡀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⡐⢹⣿⣿⡐⢡⢹⣿⣿⣿⣿⡏⣿⢣⣿⣿⡑⠁⠔⠀⠉⠉⠢⡘⣿⡇⣿⡇⠀⡀⠡⡀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠘⣿⣿⣇⠇⢣⢻⣿⣿⣿⡇⢇⣾⣿⣿⡆⢸⣤⡀⠚⢂⠀⢡⢿⡇⣿⡇⠀⢿⠀⠀⠄⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠠⠹⣿⣿⡘⣆⢣⠻⣿⣿⢈⣾⣿⣿⣿⣶⣸⣏⢀⣬⣋⡼⣠⢸⢹⣿⡇⢠⣼⠙⡄⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⡇⠁⠹⣿⣇⠹⡃⠃⠙⡇⠘⢿⣿⣿⣿⣿⣿⣏⣓⣉⣭⣴⣿⠘⢸⣿⠁⠘⠋⠀⠹⠄⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢷⠀⠀⠈⢿⣇⠂⣷⠄⠐⠀⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢠⢸⡏⠀⢀⣠⣴⣾⣿⣶⣄⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢆⠀⠀⠀⠙⠆⠈⠢⠲⠥⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡞⣸⠁⠀⢸⣿⣿⣿⣿⣿⣿⡆
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠄⠃⠀⠀⠘⣿⣿⣿⣿⣿⣿⣿
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⡏⠹⣿⣿⡿⠫⠊⠀⠀⠀⣶⠀⢻⣿⣿⣿⣿⡿⡇⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠛⠻⠿⠿⠿⢋⠀⠀⠀⠀⢀⣼⣿⡆⠈⣿⣿⣿⡟⣱⡷⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢁⣁⡀⠨⣛⠿⠶⠄⢀⣠⣾⣿⣿⣷⠀⢹⣿⡟⣴⠈⢃⣶⠔⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⣿⣿⡄⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠈⣿⣿⡿⠀⡀⣿⣷⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢙⠻⣿⣿⢀⠙⠻⠿⣿⣿⣿⣿⣿⣿⡇⠁⣿⠟⡀⠈⣧⢰⣿⠆⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⡇⠁⠹⣿⣇⠹⡃⠃⠙⡇⠘⢿⣿⣿⣿⣿⣿⣏⣓⣉⣭⣴⣿⠘⢸⣿⠁⠘⠋⠀⠹⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢷⠀⠀⠈⢿⣇⠂⣷⠄⠐⠀⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢠⢸⡏⠀⢀⣠⣴⣾⣿⣶⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢆⠀⠀⠀⠙⠆⠈⠢⠲⠥⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡞⣸⠁⠀⢸⣿⣿⣿⣿⣿⣿⡆⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠄⠃⠀⠀⠘⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⡏⠹⣿⣿⡿⠫⠊⠀⠀⠀⣶⠀⢻⣿⣿⣿⣿⡿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠛⠻⠿⠿⠿⢋⠀⠀⠀⠀⢀⣼⣿⡆⠈⣿⣿⣿⡟⣱⡷⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢁⣁⡀⠨⣛⠿⠶⠄⢀⣠⣾⣿⣿⣷⠀⢹⣿⡟⣴⠈⢃⣶⠔⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⣿⣿⡄⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠈⣿⣿⡿⠀⡀⣿⣷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢙⠻⣿⣿⢀⠙⠻⠿⣿⣿⣿⣿⣿⣿⡇⠁⣿⠟⡀⠈⣧⢰⣿⠆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠿⠴⠮⣥⠻⢧⣤⣄⣀⡉⢩⣭⣍⣃⣀⣩⠎⢀⣼⠉⣼⡯⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠑⠁⣛⠓⢒⣒⣢⡭⢁⡈⠿⠿⠟⠹⠛⠁⠀⠀⠀⠰⠃⠂⠀⠀⠀`;
 
@@ -696,6 +636,23 @@
   const perfRowsFinal = [perfHeader, ...perfContentRows];
 
   // ---------- responsive column alignment + auto-fit ----------
+  let iconOffsetPx = 0;
+  function computeIconOffset(){
+    if (window.innerWidth <= 760) { iconOffsetPx = 0; return; }
+    const icon = infoRowsEl.querySelector('.info-row svg');
+    if (!icon) return;
+    const r1 = icon.getBoundingClientRect();
+    const r2 = termBody.getBoundingClientRect();
+    if (r1.width === 0 && r1.height === 0) return; // hidden right now, keep last known value
+    iconOffsetPx = Math.round(r1.left - r2.left);
+  }
+  function applyOffset(){
+    ['memRows','storageBody','perfBody'].forEach(id => {
+      document.getElementById(id).style.paddingLeft = iconOffsetPx + 'px';
+    });
+  }
+
+  const BASE_MONO_SIZE = 12;
   function fitMonoBlock(id){
     const el = document.getElementById(id);
     if (!el || !el.firstElementChild) return;
@@ -711,11 +668,9 @@
     ['memRows','storageBody','perfBody'].forEach(fitMonoBlock);
   }
 
-  const BASE_MONO_SIZE = 12;
-
   // Scales each rotating ascii-art block to fit its column so every piece
-  // of art -- from the tiny 12-wide glyph to the 44-wide, 30-row-tall one
-  // -- stays perfectly monospaced (uniform per-character width) and never
+  // of art -- from the tiny 12-wide glyph to the 100-column wide ones --
+  // stays perfectly monospaced (uniform per-character width) and never
   // forces horizontal overflow, no matter how different their native size.
   const BASE_ASCII_SIZE = 10.5;
   function fitAsciiBlock(){
@@ -723,38 +678,35 @@
     asciiEl.style.fontSize = BASE_ASCII_SIZE + 'px';
     const stacked = window.innerWidth <= 760;
     const bodyWidth = termBody.clientWidth || 1;
-    const availableWidth = stacked ? bodyWidth - 4 : Math.min(bodyWidth * 0.44, 440);
-    const availableHeight = ART_BOX_HEIGHT;
-
-    const neededWidth = asciiEl.scrollWidth;
-    const neededHeight = asciiEl.scrollHeight;
-
-    const widthScale  = neededWidth  > availableWidth  ? availableWidth  / neededWidth  : 1;
-    const heightScale = neededHeight > availableHeight ? availableHeight / neededHeight : 1;
-    const scale = Math.min(widthScale, heightScale, 1);
-
-    if (scale < 1){
-      const fitted = Math.max(4.2, Math.floor((BASE_ASCII_SIZE * scale) * 1000) / 1000);
+    const available = stacked ? bodyWidth - 4 : Math.min(bodyWidth * 0.44, 440);
+    const needed = asciiEl.scrollWidth;
+    if (needed > available && available > 0){
+      const fitted = Math.max(4.2, Math.floor((BASE_ASCII_SIZE * (available / needed)) * 1000) / 1000);
       asciiEl.style.fontSize = fitted + 'px';
     }
   }
 
   // Keeps the terminal window sized to whatever the current theme needs.
+  // min-height is transitioned in CSS, so swapping to a taller or shorter
+  // ascii art each loop makes the whole window glide to its new size
+  // instead of snapping or jumping.
   let isFullState = false;
   function lockHeight(){
     termBody.style.minHeight = '0px';
-    void termBody.offsetHeight;
+    void termBody.offsetHeight; // force reflow before measuring
     const h = termBody.scrollHeight;
     termBody.style.minHeight = h + 'px';
   }
 
   window.addEventListener('resize', () => {
-    if (artInfo.style.display !== 'none') { fitAllMonoBlocks(); fitAsciiBlock(); }
+    if (artInfo.style.display !== 'none') { computeIconOffset(); applyOffset(); }
+    fitAllMonoBlocks();
+    fitAsciiBlock();
     if (isFullState) lockHeight();
   });
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(() => {
-      if (artInfo.style.display !== 'none') { fitAllMonoBlocks(); fitAsciiBlock(); }
+      if (artInfo.style.display !== 'none') { computeIconOffset(); applyOffset(); fitAllMonoBlocks(); fitAsciiBlock(); }
       if (isFullState) lockHeight();
     });
   }
@@ -809,6 +761,8 @@
     await sleep(250);
 
     artInfo.style.display = 'flex';
+    computeIconOffset();
+    applyOffset();
     fitAsciiBlock();
     asciiEl.classList.add('show');
     const infoRowEls = Array.from(infoRowsEl.querySelectorAll('.info-row'));
@@ -844,6 +798,8 @@
     typedCmd.textContent = 'binaryfetch';
     cmdCaret.style.display = 'none';
     artInfo.style.display = 'flex';
+    computeIconOffset();
+    applyOffset();
     fitAsciiBlock();
     asciiEl.classList.add('show');
     infoRowsEl.querySelectorAll('.info-row').forEach(r => r.classList.add('show'));
@@ -874,6 +830,8 @@
     applyTheme(THEMES[0]);
     typedCmd.textContent = 'binaryfetch';
     artInfo.style.display = 'flex';
+    computeIconOffset();
+    applyOffset();
     fitAsciiBlock();
 
     const fill = (id, rows) => {
@@ -907,6 +865,9 @@
   });
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(() => {
+      // Re-measure once web fonts finish swapping in, but only while
+      // nothing is actively animating (blank/typing phase) so it can't
+      // disrupt a reveal in progress.
       if (artInfo.style.display === 'none') measureFullHeight();
     });
   }
